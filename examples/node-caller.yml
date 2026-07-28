@@ -1,0 +1,14 @@
+name: Node CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: Deathcharge/helix-workflows/.github/workflows/node-ci.yml@master

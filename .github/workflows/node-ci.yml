@@ -1,0 +1,131 @@
+name: Reusable Node CI
+
+on:
+  workflow_call:
+    inputs:
+      node-versions:
+        description: JSON array of supported Node.js LTS versions.
+        required: false
+        type: string
+        default: '["22", "24"]'
+      runs-on:
+        description: GitHub-hosted runner label.
+        required: false
+        type: string
+        default: ubuntu-latest
+      working-directory:
+        description: Project directory relative to the repository root.
+        required: false
+        type: string
+        default: .
+      cache-dependency-path:
+        description: package-lock file or glob used for the npm cache key.
+        required: false
+        type: string
+        default: '**/package-lock.json'
+      install-command:
+        description: Trusted repository command used to install dependencies. Empty skips installation.
+        required: false
+        type: string
+        default: npm ci
+      lint-command:
+        description: Trusted repository lint command. Empty skips linting.
+        required: false
+        type: string
+        default: npm run lint --if-present
+      typecheck-command:
+        description: Trusted repository type-check command. Empty skips type checking.
+        required: false
+        type: string
+        default: npm run typecheck --if-present
+      test-command:
+        description: Trusted repository test command. Empty skips tests.
+        required: false
+        type: string
+        default: npm test
+      build-command:
+        description: Trusted repository build command. Empty skips the build.
+        required: false
+        type: string
+        default: npm run build --if-present
+      fail-fast:
+        description: Cancel remaining matrix jobs after the first failure.
+        required: false
+        type: boolean
+        default: false
+      timeout-minutes:
+        description: Maximum runtime for each matrix job.
+        required: false
+        type: number
+        default: 20
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Node.js ${{ matrix.node-version }}
+    runs-on: ${{ inputs.runs-on }}
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    strategy:
+      fail-fast: ${{ inputs.fail-fast }}
+      matrix:
+        node-version: ${{ fromJSON(inputs.node-versions) }}
+
+    steps:
+      - name: Check out caller repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.cache-dependency-path }}
+
+      - name: Install dependencies
+        if: ${{ inputs.install-command != '' }}
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          HELIX_COMMAND: ${{ inputs.install-command }}
+        run: bash -euo pipefail -c "$HELIX_COMMAND"
+
+      - name: Lint
+        if: ${{ inputs.lint-command != '' }}
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          HELIX_COMMAND: ${{ inputs.lint-command }}
+        run: bash -euo pipefail -c "$HELIX_COMMAND"
+
+      - name: Type check
+        if: ${{ inputs.typecheck-command != '' }}
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          HELIX_COMMAND: ${{ inputs.typecheck-command }}
+        run: bash -euo pipefail -c "$HELIX_COMMAND"
+
+      - name: Test
+        if: ${{ inputs.test-command != '' }}
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          HELIX_COMMAND: ${{ inputs.test-command }}
+        run: bash -euo pipefail -c "$HELIX_COMMAND"
+
+      - name: Build
+        if: ${{ inputs.build-command != '' }}
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          HELIX_COMMAND: ${{ inputs.build-command }}
+        run: bash -euo pipefail -c "$HELIX_COMMAND"
+
+      - name: Write job summary
+        if: ${{ always() }}
+        env:
+          HELIX_JOB_STATUS: ${{ job.status }}
+          HELIX_RUNTIME_VERSION: ${{ matrix.node-version }}
+        run: |
+          printf '### Node.js CI\n\n' >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- Version: `%s`\n' "$HELIX_RUNTIME_VERSION" >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- Result: **%s**\n' "$HELIX_JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"

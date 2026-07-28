@@ -1,0 +1,131 @@
+name: Reusable Python CI
+
+on:
+  workflow_call:
+    inputs:
+      python-versions:
+        description: JSON array of Python versions. Defaults to the oldest supported baseline and current stable release.
+        required: false
+        type: string
+        default: '["3.12", "3.14"]'
+      runs-on:
+        description: GitHub-hosted runner label.
+        required: false
+        type: string
+        default: ubuntu-latest
+      working-directory:
+        description: Project directory relative to the repository root.
+        required: false
+        type: string
+        default: .
+      cache-dependency-path:
+        description: Dependency file or glob used for the pip cache key.
+        required: false
+        type: string
+        default: '**/pyproject.toml'
+      install-command:
+        description: Trusted repository command used to install the project and test dependencies. Empty skips installation.
+        required: false
+        type: string
+        default: python -m pip install -e '.[dev]'
+      lint-command:
+        description: Trusted repository lint command. Empty skips linting.
+        required: false
+        type: string
+        default: ''
+      typecheck-command:
+        description: Trusted repository type-check command. Empty skips type checking.
+        required: false
+        type: string
+        default: ''
+      test-command:
+        description: Trusted repository test command. Empty skips tests.
+        required: false
+        type: string
+        default: python -m pytest
+      build-command:
+        description: Trusted repository build command. Empty skips the build.
+        required: false
+        type: string
+        default: ''
+      fail-fast:
+        description: Cancel remaining matrix jobs after the first failure.
+        required: false
+        type: boolean
+        default: false
+      timeout-minutes:
+        description: Maximum runtime for each matrix job.
+        required: false
+        type: number
+        default: 20
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ${{ inputs.runs-on }}
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    strategy:
+      fail-fast: ${{ inputs.fail-fast }}
+      matrix:
+        python-version: ${{ fromJSON(inputs.python-versions) }}
+
+    steps:
+      - name: Check out caller repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: ${{ inputs.cache-dependency-path }}
+
+      - name: Install dependencies
+        if: ${{ inputs.install-command != '' }}
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          HELIX_COMMAND: ${{ inputs.install-command }}
+        run: bash -euo pipefail -c "$HELIX_COMMAND"
+
+      - name: Lint
+        if: ${{ inputs.lint-command != '' }}
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          HELIX_COMMAND: ${{ inputs.lint-command }}
+        run: bash -euo pipefail -c "$HELIX_COMMAND"
+
+      - name: Type check
+        if: ${{ inputs.typecheck-command != '' }}
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          HELIX_COMMAND: ${{ inputs.typecheck-command }}
+        run: bash -euo pipefail -c "$HELIX_COMMAND"
+
+      - name: Test
+        if: ${{ inputs.test-command != '' }}
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          HELIX_COMMAND: ${{ inputs.test-command }}
+        run: bash -euo pipefail -c "$HELIX_COMMAND"
+
+      - name: Build
+        if: ${{ inputs.build-command != '' }}
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          HELIX_COMMAND: ${{ inputs.build-command }}
+        run: bash -euo pipefail -c "$HELIX_COMMAND"
+
+      - name: Write job summary
+        if: ${{ always() }}
+        env:
+          HELIX_JOB_STATUS: ${{ job.status }}
+          HELIX_RUNTIME_VERSION: ${{ matrix.python-version }}
+        run: |
+          printf '### Python CI\n\n' >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- Version: `%s`\n' "$HELIX_RUNTIME_VERSION" >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- Result: **%s**\n' "$HELIX_JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"

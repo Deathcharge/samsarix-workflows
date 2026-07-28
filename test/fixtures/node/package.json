@@ -1,0 +1,12 @@
+{
+  "name": "helix-workflows-node-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "node --check test/smoke.test.js",
+    "typecheck": "node --check test/smoke.test.js",
+    "test": "node --test",
+    "build": "node --check test/smoke.test.js"
+  }
+}
