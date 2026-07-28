@@ -1,132 +1,62 @@
 # Contributing to Helix Workflows
 
-Thank you for your interest in improving the Helix Workflows! This document provides guidelines for contributing.
+Helix Workflows is intentionally small. Contributions should improve the Python or npm reusable CI contracts, their validation, or their verified documentation without adding deployment, credentials, or unrelated platform scope.
 
-## Getting Started
+## Set up
 
-1. Fork the repository
-2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/helix-workflows.git`
-3. Create a feature branch: `git checkout -b feature/your-feature-name`
-4. Make your changes
-5. Test your changes thoroughly
-6. Commit with clear messages
-7. Push to your fork
-8. Submit a pull request
+Prerequisites:
 
-## Workflow Development Guidelines
+- Git 2.39 or newer;
+- Node.js 20 or newer;
+- npm with lockfile support;
+- Python 3.12 or newer when changing the Python fixture.
 
-### Adding a New Workflow
-
-1. Create a new file in `.github/workflows/` with a descriptive name
-2. Use the following template:
-
-```yaml
-name: Workflow Name
-
-on:
-  push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master, develop ]
-
-jobs:
-  job-name:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Step description
-      run: |
-        # Your commands here
+```bash
+git clone https://github.com/Deathcharge/helix-workflows.git
+cd helix-workflows
+npm ci
+npm run check
+npm test
 ```
 
-3. Document the workflow in README.md
-4. Add examples of how to use it
-5. Test in a separate repository before submitting
+Create a focused branch, make the smallest coherent change, and rerun all three commands. A pull request must also pass the GitHub-hosted `Validate workflows` pipeline, including actionlint and both consumer smoke jobs.
 
-### Workflow Best Practices
+## Workflow contract rules
 
-- **Use specific action versions:** Always pin to specific versions, not `@main`
-- **Add descriptive names:** Use clear, descriptive names for steps
-- **Include error handling:** Use `continue-on-error: true` for non-critical steps
-- **Cache dependencies:** Use caching to speed up builds
-- **Document requirements:** Clearly document any secrets or prerequisites
-- **Test thoroughly:** Test in multiple repository types before submitting
-- **Keep it DRY:** Reuse existing steps and actions
-- **Follow conventions:** Match the style of existing workflows
+- Product workflows live directly in `.github/workflows/` and declare only `on.workflow_call`.
+- Keep permissions at `contents: read` unless a separate, evidence-backed product contract genuinely requires more. Do not add `secrets: inherit`.
+- Pin every external action to a full 40-character commit SHA and record the human release version in a comment.
+- Set `persist-credentials: false` on checkout.
+- Set a bounded timeout on every runner job.
+- Never interpolate `inputs` or `github.event` values directly into a `run` script. Trusted command inputs must travel through an environment variable.
+- Do not suppress failing quality, test, build, security, release, or publication commands with `continue-on-error`, `|| true`, or redirected errors.
+- Keep defaults conservative in runner minutes and network usage.
+- Add or update a consumer fixture when behavior changes.
+- Update README input tables, examples, `CHANGELOG.md`, and `docs/PRODUCTIZATION.md` in the same pull request when the public contract changes.
 
-### Testing Your Workflow
+## Tests
 
-1. Create a test repository in your account
-2. Add the workflow to `.github/workflows/`
-3. Trigger the workflow with a push or pull request
-4. Verify it runs correctly
-5. Check logs for any errors or warnings
+`npm run check` validates repository-specific security and contract invariants. `npm test` runs negative validator tests and fixture tests. The repository CI additionally runs actionlint and invokes both reusable workflows as real caller jobs.
 
-## Code Style
+When fixing a bug, add the smallest regression test that fails before the fix. Do not make the validator accept invalid workflows merely to silence a check; fix the workflow or document a narrow, tested exception.
 
-- Use 2-space indentation in YAML
-- Use descriptive variable names
-- Add comments for complex logic
-- Keep lines under 120 characters
-- Use consistent naming conventions
+## Pull requests
 
-## Documentation
+Include:
 
-When adding or modifying workflows:
+- the user problem and why it belongs in this product;
+- the workflow contract change, if any;
+- exact commands run and their results;
+- expected runner-minute or dependency impact;
+- security or permission changes;
+- any GitHub-only behavior that could not be reproduced locally.
 
-1. Update README.md with:
-   - Workflow name and description
-   - Features list
-   - Trigger events
-   - Required secrets
-   - Usage example
+Avoid drive-by dependency upgrades, generated formatting churn, and unrelated documentation rewrites. Maintainers may request that broad features start as an issue so the product boundary remains coherent.
 
-2. Add troubleshooting section if applicable
+## Security reports
 
-3. Include configuration examples
+Do not disclose credentials, private workflow logs, or suspected exploitable behavior in a public issue. Use the repository owner's private GitHub security-reporting channel if it is enabled. If no private channel is available, ask the owner for one without including sensitive details.
 
-## Commit Messages
+## Conduct and license
 
-Use clear, descriptive commit messages:
-
-```
-Add Python test workflow with coverage reporting
-
-- Multi-version testing (3.8, 3.9, 3.10, 3.11)
-- Flake8 linting and MyPy type checking
-- Codecov integration
-- Dependency caching
-```
-
-## Pull Request Process
-
-1. Ensure your PR title is descriptive
-2. Include a clear description of changes
-3. Reference any related issues
-4. Include before/after examples if applicable
-5. Ensure all tests pass
-6. Request review from maintainers
-
-## Reporting Issues
-
-When reporting issues:
-
-1. Use a clear, descriptive title
-2. Describe the problem in detail
-3. Include steps to reproduce
-4. Provide example workflow files
-5. Include error messages or logs
-6. Specify your GitHub Actions environment
-
-## Questions?
-
-- Check existing issues and discussions
-- Review the README.md documentation
-- Open a discussion for questions
-- Contact: support@helixcollective.dev
-
----
-
-**Thank you for contributing to Helix Workflows!**
+Participation is governed by [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Contributions are accepted under the repository's existing [`LICENSE`](LICENSE); contributors should not change license terms without explicit owner approval.

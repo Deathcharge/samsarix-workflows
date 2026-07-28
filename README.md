@@ -1,486 +1,210 @@
 # Helix Workflows
 
-Shared GitHub Actions workflows for the Helix Collective ecosystem. These reusable workflows provide standardized CI/CD pipelines for all repositories.
+Reusable, least-privilege GitHub Actions CI for modern Python and npm projects.
 
----
+Helix Workflows gives maintainers one reviewed CI contract they can call from many repositories. It checks out the caller repository, prepares a bounded runtime matrix, runs the caller's trusted install/quality/test/build commands, fails on the first broken step in each job, and writes a short job summary.
 
-## Overview
+**Maturity:** release candidate. The workflow files, local validators, negative security tests, and fixture commands pass locally. The final external gate is a successful run of this repository's `Validate workflows` pipeline on GitHub-hosted runners, followed by the owner-created first release tag.
 
-This repository contains standardized GitHub Actions workflows that can be referenced from any Helix Collective repository. Using shared workflows ensures consistency, reduces duplication, and simplifies maintenance across the entire ecosystem.
+This repository is independent of `helix-unified` and requires no Helix service, account, API, database, or secret.
 
-**Status:** Production Ready  
-**License:** Business Source License 1.1 (BSL 1.1)
+## Choose a workflow
 
----
+| Workflow | Intended caller | Default matrix | Required project convention |
+| --- | --- | --- | --- |
+| [`python-ci.yml`](.github/workflows/python-ci.yml) | Python package or application | Python 3.12 and 3.14 | `pyproject.toml`; the default install expects a `dev` extra containing pytest |
+| [`node-ci.yml`](.github/workflows/node-ci.yml) | npm package or application | Node.js 22 and 24 | committed `package-lock.json` and a working `npm test` script |
 
-## Available Workflows
+Both workflows use Ubuntu GitHub-hosted runners by default. They request only `contents: read`, do not receive secrets, do not persist checkout credentials, and cap each matrix job at 20 minutes.
 
-### 1. Test Python (`test-python.yml`)
+## Quick start
 
-Automated testing for Python projects.
+Prerequisites:
 
-**Features:**
-- Multi-version testing (Python 3.8, 3.9, 3.10, 3.11)
-- Dependency caching for faster builds
-- Flake8 linting
-- MyPy type checking
-- Pytest with coverage reporting
-- Codecov integration
+- a GitHub repository with GitHub Actions enabled;
+- a supported Python or Node project matching the conventions above;
+- permission to add a caller file under `.github/workflows/`.
 
-**Triggers:**
-- Push to main, master, develop branches
-- Pull requests to main, master, develop branches
-
-**Usage:**
-
-```yaml
-name: Test
-
-on:
-  push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master, develop ]
-
-jobs:
-  test:
-    uses: Deathcharge/helix-workflows/.github/workflows/test-python.yml@main
-```
-
-### 2. Test Node.js (`test-node.yml`)
-
-Automated testing for Node.js projects.
-
-**Features:**
-- Multi-version testing (Node 16, 18, 20)
-- NPM dependency caching
-- ESLint linting
-- TypeScript type checking
-- Jest/Vitest with coverage
-- Codecov integration
-
-**Triggers:**
-- Push to main, master, develop branches
-- Pull requests to main, master, develop branches
-
-**Usage:**
-
-```yaml
-name: Test
-
-on:
-  push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master, develop ]
-
-jobs:
-  test:
-    uses: Deathcharge/helix-workflows/.github/workflows/test-node.yml@main
-```
-
-### 3. Security Scan (`security.yml`)
-
-Comprehensive security scanning and vulnerability detection.
-
-**Features:**
-- Trivy filesystem scanning
-- GitHub Security tab integration
-- Snyk dependency scanning
-- Secret detection with TruffleHog
-- OWASP Dependency Check
-- Weekly scheduled scans
-
-**Triggers:**
-- Push to main, master, develop branches
-- Pull requests to main, master, develop branches
-- Weekly schedule (Sunday at 00:00 UTC)
-
-**Secrets Required:**
-- `SNYK_TOKEN` (optional, for Snyk scanning)
-
-**Usage:**
-
-```yaml
-name: Security
-
-on:
-  push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master, develop ]
-  schedule:
-    - cron: '0 0 * * 0'
-
-jobs:
-  security:
-    uses: Deathcharge/helix-workflows/.github/workflows/security.yml@main
-    secrets:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-```
-
-### 4. Code Quality (`quality.yml`)
-
-Multi-tool code quality analysis.
-
-**Features:**
-- SonarQube/SonarCloud integration
-- CodeFactor analysis
-- Python: Pylint, Black, isort, Bandit
-- JavaScript: ESLint, Prettier, Stylelint
-- Cross-language quality checks
-
-**Secrets Required:**
-- `SONAR_TOKEN` (optional, for SonarQube)
-- `CODEFACTOR_PROJECTTOKEN` (optional, for CodeFactor)
-
-**Usage:**
-
-```yaml
-name: Quality
-
-on:
-  push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master, develop ]
-
-jobs:
-  quality:
-    uses: Deathcharge/helix-workflows/.github/workflows/quality.yml@main
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      CODEFACTOR_PROJECTTOKEN: ${{ secrets.CODEFACTOR_PROJECTTOKEN }}
-```
-
-### 5. Release (`release.yml`)
-
-Automated release management and publishing.
-
-**Features:**
-- Automatic GitHub Release creation
-- Release notes from commit history
-- Python package publishing to PyPI
-- Node.js package publishing to NPM
-- GitHub Packages integration
-- Git tag triggered
-
-**Secrets Required:**
-- `PYPI_TOKEN` (optional, for PyPI publishing)
-- `NPM_TOKEN` (optional, for NPM publishing)
-
-**Triggers:**
-- Git tag push (format: `v*`)
-
-**Usage:**
-
-```yaml
-name: Release
-
-on:
-  push:
-    tags:
-      - 'v*'
-
-jobs:
-  release:
-    uses: Deathcharge/helix-workflows/.github/workflows/release.yml@main
-    secrets:
-      PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-```
-
----
-
-## Quick Start
-
-### For Python Projects
-
-1. Create `.github/workflows/ci.yml` in your repository:
-
-```yaml
-name: CI
-
-on:
-  push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master, develop ]
-
-jobs:
-  test:
-    uses: Deathcharge/helix-workflows/.github/workflows/test-python.yml@main
-
-  quality:
-    uses: Deathcharge/helix-workflows/.github/workflows/quality.yml@main
-    secrets: inherit
-
-  security:
-    uses: Deathcharge/helix-workflows/.github/workflows/security.yml@main
-    secrets: inherit
-```
-
-2. Ensure your project has:
-   - `tests/` directory with test files
-   - `pyproject.toml` or `setup.py`
-   - Optional: `pytest.ini` for pytest configuration
-
-### For Node.js Projects
-
-1. Create `.github/workflows/ci.yml` in your repository:
-
-```yaml
-name: CI
-
-on:
-  push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master, develop ]
-
-jobs:
-  test:
-    uses: Deathcharge/helix-workflows/.github/workflows/test-node.yml@main
-
-  quality:
-    uses: Deathcharge/helix-workflows/.github/workflows/quality.yml@main
-    secrets: inherit
-
-  security:
-    uses: Deathcharge/helix-workflows/.github/workflows/security.yml@main
-    secrets: inherit
-```
-
-2. Ensure your project has:
-   - `package.json` with test script
-   - `tests/` or `__tests__/` directory
-   - Optional: `.eslintrc.json`, `.prettierrc.json`
-
-### For Release Management
-
-1. Create `.github/workflows/release.yml` in your repository:
-
-```yaml
-name: Release
-
-on:
-  push:
-    tags:
-      - 'v*'
-
-jobs:
-  release:
-    uses: Deathcharge/helix-workflows/.github/workflows/release.yml@main
-    secrets: inherit
-```
-
-2. Tag your releases:
+For Python, copy [`examples/python-caller.yml`](examples/python-caller.yml) into the caller repository:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+mkdir -p .github/workflows
+cp examples/python-caller.yml .github/workflows/ci.yml
 ```
 
----
-
-## Configuration
-
-### Python Project Configuration
-
-**pyproject.toml:**
-
-```toml
-[project]
-name = "your-project"
-version = "1.0.0"
-
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "flake8>=5.0",
-    "mypy>=0.990",
-    "black>=22.0",
-    "isort>=5.0",
-]
-```
-
-**pytest.ini:**
-
-```ini
-[pytest]
-testpaths = tests
-python_files = test_*.py
-python_classes = Test*
-python_functions = test_*
-addopts = --cov=src --cov-report=term-missing
-```
-
-### Node.js Project Configuration
-
-**package.json:**
-
-```json
-{
-  "scripts": {
-    "test": "jest --coverage",
-    "lint": "eslint .",
-    "type-check": "tsc --noEmit",
-    "build": "tsc"
-  },
-  "devDependencies": {
-    "jest": "^29.0",
-    "@types/jest": "^29.0",
-    "eslint": "^8.0",
-    "prettier": "^3.0",
-    "typescript": "^5.0"
-  }
-}
-```
-
----
-
-## Secrets Management
-
-### Setting Up Secrets
-
-1. Go to your repository Settings → Secrets and variables → Actions
-2. Add the following secrets as needed:
-
-| Secret | Purpose | Where to Get |
-|--------|---------|-------------|
-| `PYPI_TOKEN` | Publish to PyPI | https://pypi.org/account/ |
-| `NPM_TOKEN` | Publish to NPM | https://npmjs.com/settings/tokens |
-| `SNYK_TOKEN` | Snyk security scanning | https://snyk.io/account/api-token |
-| `SONAR_TOKEN` | SonarQube analysis | https://sonarcloud.io/account/security |
-| `CODEFACTOR_PROJECTTOKEN` | CodeFactor analysis | https://www.codefactor.io/dashboard |
-
-### Using Organization Secrets
-
-For organization-wide secrets, set them in your GitHub organization settings and reference with `secrets: inherit` in your workflow.
-
----
-
-## Best Practices
-
-### 1. Always Use Specific Versions
-
-Instead of `@main`, use specific versions:
+The resulting caller is:
 
 ```yaml
-uses: Deathcharge/helix-workflows/.github/workflows/test-python.yml@v1.0.0
+name: Python CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: Deathcharge/helix-workflows/.github/workflows/python-ci.yml@master
+    with:
+      lint-command: python -m ruff check .
+      typecheck-command: python -m mypy .
+      build-command: python -m build
 ```
 
-### 2. Combine Multiple Workflows
+For npm, use [`examples/node-caller.yml`](examples/node-caller.yml):
+
+```yaml
+name: Node CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: Deathcharge/helix-workflows/.github/workflows/node-ci.yml@master
+```
+
+`@master` is the evaluation reference until the first release exists. For production use, replace it with the full 40-character commit SHA from a successful release, for example `@0123456789abcdef0123456789abcdef01234567`. A future moving `@v0` tag may be more convenient but is less tamper-resistant than a commit SHA.
+
+Push the caller file or open a pull request. GitHub shows one job per requested runtime. Failed install, lint, type-check, test, and build phases remain separate named steps, so the failing command is visible and reproducible locally. Fix the command and use GitHub's **Re-run failed jobs** action; there is no hidden retry loop.
+
+## Python contract
+
+Inputs are passed under the caller job's `with` key.
+
+| Input | Type | Default | Behavior |
+| --- | --- | --- | --- |
+| `python-versions` | JSON string | `["3.12", "3.14"]` | Matrix consumed by `fromJSON`; malformed JSON fails before commands run. |
+| `runs-on` | string | `ubuntu-latest` | Runner label selected by trusted workflow configuration. |
+| `working-directory` | string | `.` | Directory for install, quality, test, and build commands. |
+| `cache-dependency-path` | string | `**/pyproject.toml` | File or glob hashed for setup-python's pip cache. |
+| `install-command` | string | `python -m pip install -e '.[dev]'` | Empty skips installation. |
+| `lint-command` | string | empty | Empty skips linting. |
+| `typecheck-command` | string | empty | Empty skips type checking. |
+| `test-command` | string | `python -m pytest` | Empty skips tests intentionally. |
+| `build-command` | string | empty | Empty skips building. |
+| `fail-fast` | boolean | `false` | Whether the first failed version cancels other matrix jobs. |
+| `timeout-minutes` | number | `20` | Maximum time for each matrix job. |
+
+Example for a project using a requirements file and the standard library test runner:
 
 ```yaml
 jobs:
-  test:
-    uses: Deathcharge/helix-workflows/.github/workflows/test-python.yml@main
-
-  quality:
-    uses: Deathcharge/helix-workflows/.github/workflows/quality.yml@main
-    needs: test
-
-  security:
-    uses: Deathcharge/helix-workflows/.github/workflows/security.yml@main
-    needs: test
+  ci:
+    uses: Deathcharge/helix-workflows/.github/workflows/python-ci.yml@master
+    with:
+      python-versions: '["3.13", "3.14"]'
+      cache-dependency-path: requirements-dev.txt
+      install-command: python -m pip install -r requirements-dev.txt
+      test-command: python -m unittest discover -s tests
 ```
 
-### 3. Require Status Checks
+## Node contract
 
-In your repository settings, require the following status checks to pass before merging:
-- Test workflow
-- Quality workflow
-- Security workflow
+| Input | Type | Default | Behavior |
+| --- | --- | --- | --- |
+| `node-versions` | JSON string | `["22", "24"]` | Supported Node.js LTS matrix consumed by `fromJSON`. |
+| `runs-on` | string | `ubuntu-latest` | Runner label selected by trusted workflow configuration. |
+| `working-directory` | string | `.` | Directory for npm commands. |
+| `cache-dependency-path` | string | `**/package-lock.json` | Lockfile or glob hashed for setup-node's npm cache. |
+| `install-command` | string | `npm ci` | Empty skips installation. |
+| `lint-command` | string | `npm run lint --if-present` | Missing script is intentionally skipped; a present failing script fails the job. |
+| `typecheck-command` | string | `npm run typecheck --if-present` | Same fail/skip contract as lint. |
+| `test-command` | string | `npm test` | Required by default; empty skips tests intentionally. |
+| `build-command` | string | `npm run build --if-present` | Missing script is skipped; a present failing build fails. |
+| `fail-fast` | boolean | `false` | Whether the first failed version cancels other matrix jobs. |
+| `timeout-minutes` | number | `20` | Maximum time for each matrix job. |
 
-### 4. Protect Main Branch
+Monorepo example:
 
-Set up branch protection rules:
-- Require pull request reviews
-- Require status checks to pass
-- Require branches to be up to date
-- Dismiss stale pull request approvals
+```yaml
+jobs:
+  web:
+    uses: Deathcharge/helix-workflows/.github/workflows/node-ci.yml@master
+    with:
+      working-directory: apps/web
+      cache-dependency-path: apps/web/package-lock.json
+```
 
----
+## Command trust boundary
 
-## Troubleshooting
+The `*-command` inputs intentionally execute shell commands. They are configuration for repository maintainers who already control both the caller workflow and the source being built. The reusable workflows place each command in an environment variable and execute it with `bash -euo pipefail -c`; they never splice the command into generated shell source.
 
-### Workflow Not Running
+Never construct a command input from a pull-request title or body, issue text, branch name, commit message, label, API response, or other untrusted event data. Do not pass secrets in command strings because GitHub may display commands and process output in logs.
 
-1. Check that the workflow file exists in `.github/workflows/`
-2. Verify the syntax is correct (use GitHub's workflow editor)
-3. Check that the trigger events match your repository activity
-4. Ensure the referenced workflow exists in helix-workflows
+## Development and verification
 
-### Tests Failing
+Repository maintainers need Node.js 20 or newer and npm. Consumers do not install this repository's tooling.
 
-1. Check that your project structure matches expectations:
-   - Python: `tests/` directory with `test_*.py` files
-   - Node.js: `tests/` or `__tests__/` directory
-2. Verify dependencies are listed in `pyproject.toml` or `package.json`
-3. Check that test scripts are defined in `package.json`
+```bash
+npm ci
+npm run check
+npm test
+```
 
-### Secrets Not Available
+- `npm run check` parses every workflow, verifies both reusable contracts exist, enforces read-only permissions, requires timeouts and full action SHAs, checks checkout credential persistence, and rejects direct event/input interpolation in shell scripts.
+- `npm test` runs the validator's negative tests and the Node consumer fixture through Node's built-in test runner.
+- [`validate.yml`](.github/workflows/validate.yml) repeats those checks, downloads actionlint `v1.7.12` from its versioned release, verifies the archive SHA-256, runs actionlint, and calls both reusable workflows against minimal consumer fixtures.
 
-1. Verify secrets are set in repository settings
-2. Use `secrets: inherit` to pass organization secrets
-3. Check that secret names match exactly
-4. Ensure secrets are not being masked in logs
+There is no service to start and no distributable package to build. The release artifact is the tagged Git tree containing `.github/workflows/*.yml`.
 
-### Coverage Reports Not Uploading
+## Architecture
 
-1. Ensure Codecov token is set (usually not needed for public repos)
-2. Check that coverage files are generated
-3. Verify `codecov-action` is using correct file path
+The caller repository owns events, concurrency, source code, dependency manifests, commands, and any branch-protection policy. GitHub loads the selected reusable workflow revision and runs its matrix jobs in the caller's security context. `actions/checkout` therefore checks out the caller repository, not this workflow repository.
 
----
+Repository validation has two independent layers:
 
-## Contributing
+1. a small locked Node/YAML validator for product-specific invariants and regression tests;
+2. actionlint in GitHub CI for the broader GitHub Actions schema and expression language.
 
-To contribute improvements to these workflows:
+The workflows have no database, network service, telemetry, user accounts, or retained application data.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly in your own repository
-5. Submit a pull request
+## Security, privacy, reliability, and cost
 
----
+- External actions are pinned to full commits with their release versions recorded in comments.
+- The `GITHUB_TOKEN` is read-only and checkout credentials are removed before caller commands run.
+- No secrets are declared or inherited. Private dependency authentication is deliberately caller-owned and not part of the first-release contract.
+- Commands fail closed. Optional steps are skipped only when their input is explicitly empty or, for npm lint/type-check/build, when the named script is absent.
+- Every job has a timeout; the matrix uses `fail-fast: false` by default so one runtime does not hide compatibility results from another.
+- Logs and summaries are stored by GitHub under the caller's retention settings. Helix Workflows collects nothing independently.
+- Default cost is two runner jobs per called workflow. The hard ceiling is 40 runner-minutes per workflow call (two versions × 20 minutes); actual billed time depends on GitHub's plan, runner, and command duration. Reduce the version array and timeout for tighter budgets.
+- Dependencies are downloaded by the caller's package manager and GitHub setup actions. Review lockfiles and dependency sources in each caller repository.
 
-## Support
+Please report suspected vulnerabilities privately through the repository owner's established GitHub security-reporting channel if enabled. Do not include credentials or sensitive logs in a public issue. A repository-wide security policy and private reporting contact remain owner-controlled release follow-ups.
 
-For issues or questions:
+## Limitations
 
-- **GitHub Issues:** https://github.com/Deathcharge/helix-workflows/issues
-- **Email:** support@helixcollective.dev
-- **Discord:** https://discord.gg/helix-collective
+- Only Ubuntu, pip-compatible Python projects, and npm lockfiles are covered in the first release.
+- Poetry, uv, pnpm, Yarn, Windows, macOS, service containers, coverage upload, package publication, deployment, and provenance generation are out of scope.
+- Callers cannot append steps to a job that calls a reusable workflow; create a separate dependent job when extra behavior is needed.
+- GitHub-hosted execution cannot be perfectly reproduced locally. A branch push or pull request is required for the final smoke test.
+- The existing BSL production-use metric is ambiguous for workflow invocations; organizations considering commercial production use should obtain owner/legal clarification.
 
----
+## Releases and updates
+
+There is no published tag yet. [`CHANGELOG.md`](CHANGELOG.md) records the proposed `v0.1.0` scope. The owner-controlled release process is:
+
+1. merge after `Validate workflows` passes on GitHub;
+2. create immutable tag `v0.1.0` and a GitHub Release;
+3. optionally move a documented compatibility tag `v0` to that commit;
+4. update consumers deliberately, preferably through reviewed dependency-update pull requests.
+
+This repository does not publish to npm, PyPI, GitHub Packages, or any cloud service.
+
+## Contributing and support
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the required local checks and workflow contract rules. Use [GitHub Issues](https://github.com/Deathcharge/helix-workflows/issues) for reproducible bugs and narrowly scoped feature requests; do not send secrets in issues.
 
 ## License
 
-Business Source License 1.1 (BSL 1.1)
-
-Non-commercial use is free. Commercial use requires a license.  
-See LICENSE file for details.
-
----
-
-## Changelog
-
-### v1.0.0 (June 17, 2024)
-
-**Initial Release:**
-- ✅ Python test workflow
-- ✅ Node.js test workflow
-- ✅ Security scanning workflow
-- ✅ Code quality workflow
-- ✅ Release management workflow
-- ✅ Comprehensive documentation
-
----
-
-**Maintained By:** Helix Collective  
-**Repository:** https://github.com/Deathcharge/helix-workflows  
-**Last Updated:** June 17, 2024
+The repository currently contains a Business Source License 1.1 grant with a change date of June 16, 2027, after which the stated change license is Apache License 2.0. The license text includes additional production-use terms. Read [`LICENSE`](LICENSE) and obtain owner/legal advice for commercial use. This productization work does not alter or interpret those terms.
