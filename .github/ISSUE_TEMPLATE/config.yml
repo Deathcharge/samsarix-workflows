@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security report
+    url: mailto:support@samsarix.com?subject=%5BSECURITY%5D%20Samsarix%20Workflows
+    about: Report suspected vulnerabilities without posting sensitive details publicly.
+  - name: Private support
+    url: mailto:support@samsarix.com?subject=Samsarix%20Workflows%20support
+    about: Ask for help that cannot be handled safely in a public issue.
+  - name: General or commercial inquiry
+    url: mailto:contact@samsarix.com?subject=Samsarix%20Workflows
+    about: Contact Samsarix LLC about the project or commercial licensing.

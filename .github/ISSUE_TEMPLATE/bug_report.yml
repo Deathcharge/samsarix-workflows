@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a reproducible problem with a reusable workflow or repository check.
+title: '[Bug]: '
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Do not include secrets, private logs, or suspected exploit details. Send private
+        support or security reports to support@samsarix.com instead.
+  - type: input
+    id: workflow
+    attributes:
+      label: Workflow and reference
+      description: Name the workflow path and exact tag or commit SHA used by the caller.
+      placeholder: .github/workflows/node-ci.yml@0123456789abcdef...
+    validations:
+      required: true
+  - type: dropdown
+    id: ecosystem
+    attributes:
+      label: Ecosystem
+      options:
+        - Python
+        - Node.js / npm
+        - Repository validation
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the smallest sanitized caller workflow and commands that reproduce the issue.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the failing step name and a sanitized log excerpt.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed credentials, tokens, private URLs, and sensitive log content.
+          required: true

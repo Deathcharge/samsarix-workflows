@@ -1,0 +1,17 @@
+{
+  "name": "samsarix-workflows-tooling",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Validation tooling for the Samsarix reusable GitHub Actions workflows",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node scripts/validate-workflows.mjs",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "yaml": "2.9.0"
+  }
+}

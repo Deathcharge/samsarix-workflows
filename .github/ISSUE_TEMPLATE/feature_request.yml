@@ -1,0 +1,32 @@
+name: Feature request
+description: Propose a focused improvement to the reusable CI contracts.
+title: '[Feature]: '
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: Describe the concrete maintainer problem, not only the desired implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed contract
+      description: Explain new inputs, defaults, outputs, permissions, or caller behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Adoption evidence
+      description: Note affected repositories, recurring work, or other evidence that the feature is needed.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Security and cost impact
+      description: Describe permission, secret, dependency, runner-minute, and compatibility effects.
+    validations:
+      required: true
