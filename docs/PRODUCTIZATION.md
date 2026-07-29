@@ -135,7 +135,7 @@ Final command results are recorded below as they are run; results must not be in
 - Verified the workflow set with the repository validator, Node tests, Python fixture, and independently downloaded actionlint `v1.7.12` after matching its published SHA-256.
 - Tightened the adversarial review gaps: Python CI now dogfoods its default onboarding path, and the validator also rejects mutable external reusable-workflow jobs plus bracket-notation shell interpolation.
 - Completed a standard 22-file source security scan with explicit per-file coverage, no unresolved candidates, and no reportable findings. The generated report remains an external scan artifact rather than a tracked product file.
-- Rebranded product-facing names and internal runtime labels for Samsarix LLC while retaining `Deathcharge/helix-workflows` anywhere it remains the real external GitHub coordinate.
+- Rebranded product-facing names, internal runtime labels, and external references for Samsarix LLC and the canonical `Deathcharge/samsarix-workflows` coordinate.
 - Replaced stale contact and pricing endpoints, completed community enforcement guidance, and added automated dependency and contribution intake configuration.
 - Created a protected feature branch; no pre-existing user changes existed.
 
@@ -145,7 +145,7 @@ Final command results are recorded below as they are run; results must not be in
 - Creating `v0.1.0`, moving a compatibility `v0` tag, and publishing a GitHub Release are owner-controlled release actions.
 - Branch protection and required checks are repository-owner settings.
 - The BSL production-use threshold refers to `API calls or equivalent usage metric`, which is ambiguous for a workflow library and still requires owner/legal clarification. The Samsarix pricing page and commercial contact now resolve.
-- The public GitHub coordinate is still `Deathcharge/helix-workflows`; renaming or transferring it, then updating caller references, is an external owner action.
+- The public GitHub coordinate is `Deathcharge/samsarix-workflows`; callers should pin immutable release tags at this canonical coordinate.
 - GitHub private vulnerability reporting remains an optional repository setting; the approved root security policy provides `support@samsarix.com` as the working private channel.
 
 ## Known risks

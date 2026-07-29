@@ -12,7 +12,7 @@ Prerequisites:
 - Python 3.12 or newer when changing the Python fixture.
 
 ```bash
-git clone https://github.com/Deathcharge/helix-workflows.git
+git clone https://github.com/Deathcharge/samsarix-workflows.git
 cd helix-workflows
 npm ci
 npm run check

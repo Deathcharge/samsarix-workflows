@@ -11,4 +11,4 @@ permissions:
 
 jobs:
   ci:
-    uses: Deathcharge/helix-workflows/.github/workflows/node-ci.yml@master
+    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@master

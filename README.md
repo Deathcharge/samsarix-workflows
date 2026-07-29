@@ -8,7 +8,7 @@ Samsarix Workflows gives maintainers one reviewed CI contract they can call from
 
 **Maturity:** release candidate. The workflow files, local validators, negative security tests, and fixture commands pass locally. The final external gate is a successful run of this repository's `Validate workflows` pipeline on GitHub-hosted runners, followed by the owner-created first release tag.
 
-This repository is independently usable and requires no Samsarix service, account, API, database, or secret. The GitHub repository remains at `Deathcharge/helix-workflows` until its owner renames or transfers that external coordinate.
+This repository is independently usable and requires no Samsarix service, account, API, database, or secret. Its canonical GitHub coordinate is `Deathcharge/samsarix-workflows`.
 
 ## Choose a workflow
 
@@ -50,7 +50,7 @@ permissions:
 
 jobs:
   ci:
-    uses: Deathcharge/helix-workflows/.github/workflows/python-ci.yml@master
+    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@master
     with:
       lint-command: python -m ruff check .
       typecheck-command: python -m mypy .
@@ -73,7 +73,7 @@ permissions:
 
 jobs:
   ci:
-    uses: Deathcharge/helix-workflows/.github/workflows/node-ci.yml@master
+    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@master
 ```
 
 `@master` is the evaluation reference until the first release exists. For production use, replace it with the full 40-character commit SHA from a successful release, for example `@0123456789abcdef0123456789abcdef01234567`. A future moving `@v0` tag may be more convenient but is less tamper-resistant than a commit SHA.
@@ -103,7 +103,7 @@ Example for a project using a requirements file and the standard library test ru
 ```yaml
 jobs:
   ci:
-    uses: Deathcharge/helix-workflows/.github/workflows/python-ci.yml@master
+    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@master
     with:
       python-versions: '["3.13", "3.14"]'
       cache-dependency-path: requirements-dev.txt
@@ -132,7 +132,7 @@ Monorepo example:
 ```yaml
 jobs:
   web:
-    uses: Deathcharge/helix-workflows/.github/workflows/node-ci.yml@master
+    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@master
     with:
       working-directory: apps/web
       cache-dependency-path: apps/web/package-lock.json
@@ -205,7 +205,7 @@ This repository does not publish to npm, PyPI, GitHub Packages, or any cloud ser
 
 ## Contributing and support
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the required local checks and workflow contract rules and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) for community expectations. Use [GitHub Issues](https://github.com/Deathcharge/helix-workflows/issues) for reproducible bugs and narrowly scoped feature requests, `support@samsarix.com` for private support or security matters, and `contact@samsarix.com` for general or commercial inquiries. Do not send secrets in issues.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the required local checks and workflow contract rules and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) for community expectations. Use [GitHub Issues](https://github.com/Deathcharge/samsarix-workflows/issues) for reproducible bugs and narrowly scoped feature requests, `support@samsarix.com` for private support or security matters, and `contact@samsarix.com` for general or commercial inquiries. Do not send secrets in issues.
 
 ## License
 
