@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   ci:
-    uses: Deathcharge/helix-workflows/.github/workflows/python-ci.yml@master
+    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@master
     with:
       lint-command: python -m ruff check .
       typecheck-command: python -m mypy .
