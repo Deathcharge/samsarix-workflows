@@ -4,15 +4,15 @@ Last updated: 2026-07-28
 
 ## Repository assessment
 
-The repository was intended to centralize GitHub Actions workflows for Helix projects. At baseline, the tracked tree contained only `README.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `LICENSE`, and `.gitignore`. The latest commit (`87f1151`) had deleted all five advertised workflow files with the message `Remove workflows temporarily for push`, while the README still labeled the product production ready.
+The repository was intended to centralize GitHub Actions workflows for projects under the former Helix branding. At baseline, the tracked tree contained only `README.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `LICENSE`, and `.gitignore`. The latest commit (`87f1151`) had deleted all five advertised workflow files with the message `Remove workflows temporarily for push`, while the README still labeled the product production ready.
 
 The removed initial workflows were not reusable: they used `push`, `pull_request`, `schedule`, or tag triggers and did not declare `workflow_call`. Several important checks and every package-publication command suppressed failures. External actions used mutable major, `main`, or `master` references; release jobs accepted long-lived registry tokens; and the repository had no tests or CI protecting workflow syntax.
 
 ## Chosen product
 
-Helix Workflows is a small public library of callable GitHub Actions CI workflows for maintainers of modern Python and npm repositories. Its product wedge is predictable, low-configuration CI with explicit contracts, conservative permissions, pinned action dependencies, bounded runtime, and testable examples.
+Samsarix Workflows is a small public library of callable GitHub Actions CI workflows for maintainers of modern Python and npm repositories. Its product wedge is predictable, low-configuration CI with explicit contracts, conservative permissions, pinned action dependencies, bounded runtime, and testable examples.
 
-It is independently useful because any GitHub repository can call it; it has no dependency on `helix-unified`, private services, Helix credentials, a database, or cloud infrastructure.
+It is independently useful because any GitHub repository can call it; it has no dependency on the former `helix-unified` application, private Samsarix services, credentials, a database, or cloud infrastructure.
 
 ### Target user and primary use case
 
@@ -32,7 +32,7 @@ Primary journey:
 - Managing credentials, environments, branch protection, or repository settings.
 - Pretending one generic security scan replaces GitHub code scanning, Dependabot, or ecosystem-specific tools.
 - Supporting package managers other than pip-compatible Python projects and npm in the first release.
-- Reproducing any application functionality from `helix-unified`.
+- Reproducing any application functionality from the former `helix-unified` application.
 
 ## Product and architecture decisions
 
@@ -51,7 +51,7 @@ Primary journey:
 - GitHub-hosted runners are acceptable for the first release. A caller-selected runner label is trusted configuration.
 - Python callers use a `pyproject.toml` and provide their test tools through a `dev` extra, or override the commands.
 - Node callers commit `package-lock.json` and support `npm ci`.
-- Existing BSL 1.1 text reflects owner intent; no license terms are changed here.
+- Existing BSL 1.1 terms reflect owner intent. The 2026 Samsarix branding pass updates the licensor, product name, commercial contact, and verified pricing URL without interpreting the usage threshold or other terms.
 
 ## Bounded ecosystem research
 
@@ -98,7 +98,7 @@ Final command results are recorded below as they are run; results must not be in
 - [ ] Add a future Python package-manager contract for uv/Poetry if real users need it.
 - [ ] Add pnpm/Yarn workflows only after demand is demonstrated.
 - [ ] Add release automation for immutable `v0` tag movement after owner policy is defined.
-- [ ] Repair or replace the truncated Code of Conduct after the owner selects an enforcement contact and confirms the intended Contributor Covenant version.
+- [x] Repair the truncated Code of Conduct using the owner-provided Samsarix enforcement contact and the existing Contributor Covenant 2.1 basis.
 
 ## Implementation checklist
 
@@ -113,6 +113,9 @@ Final command results are recorded below as they are run; results must not be in
 - [x] CI consumer smoke fixtures.
 - [x] Generated lockfiles.
 - [x] Accurate README and contribution guide.
+- [x] Samsarix LLC branding, working support/contact endpoints, and complete conduct guidance.
+- [x] Owner-approved root security policy with private reporting and scanner boundaries.
+- [x] Dependabot configuration and structured issue/pull-request intake.
 - [x] Local and independent workflow verification.
 
 ## Release acceptance criteria
@@ -132,6 +135,8 @@ Final command results are recorded below as they are run; results must not be in
 - Verified the workflow set with the repository validator, Node tests, Python fixture, and independently downloaded actionlint `v1.7.12` after matching its published SHA-256.
 - Tightened the adversarial review gaps: Python CI now dogfoods its default onboarding path, and the validator also rejects mutable external reusable-workflow jobs plus bracket-notation shell interpolation.
 - Completed a standard 22-file source security scan with explicit per-file coverage, no unresolved candidates, and no reportable findings. The generated report remains an external scan artifact rather than a tracked product file.
+- Rebranded product-facing names and internal runtime labels for Samsarix LLC while retaining `Deathcharge/helix-workflows` anywhere it remains the real external GitHub coordinate.
+- Replaced stale contact and pricing endpoints, completed community enforcement guidance, and added automated dependency and contribution intake configuration.
 - Created a protected feature branch; no pre-existing user changes existed.
 
 ## Deferred and externally blocked work
@@ -139,8 +144,9 @@ Final command results are recorded below as they are run; results must not be in
 - A real GitHub-hosted workflow run requires pushing the branch or opening a pull request; this environment has not been authorized to push.
 - Creating `v0.1.0`, moving a compatibility `v0` tag, and publishing a GitHub Release are owner-controlled release actions.
 - Branch protection and required checks are repository-owner settings.
-- The BSL production-use threshold refers to `API calls or equivalent usage metric`, which is ambiguous for a workflow library. License clarification and the advertised pricing/contact endpoints require owner/legal confirmation.
-- The Code of Conduct is truncated at line 31; choosing enforcement contact details is owner-controlled, so the core release does not invent them.
+- The BSL production-use threshold refers to `API calls or equivalent usage metric`, which is ambiguous for a workflow library and still requires owner/legal clarification. The Samsarix pricing page and commercial contact now resolve.
+- The public GitHub coordinate is still `Deathcharge/helix-workflows`; renaming or transferring it, then updating caller references, is an external owner action.
+- GitHub private vulnerability reporting remains an optional repository setting; the approved root security policy provides `support@samsarix.com` as the working private channel.
 
 ## Known risks
 
@@ -154,7 +160,7 @@ Final command results are recorded below as they are run; results must not be in
 
 Distribution is a tagged public GitHub repository. Consumers reference a workflow path at an immutable commit SHA for maximum integrity; the owner may maintain a convenient moving `v0` tag with documented trust tradeoffs. No hosted service or operating infrastructure is required.
 
-Sustainability should remain maintenance-based: small reviewed releases, automated dependency update proposals, and optionally commercial support consistent with the existing license after the owner clarifies its workflow-specific usage metric. There is no credible basis for subscriptions, usage billing, or paid infrastructure at this stage.
+Sustainability should remain maintenance-based: small reviewed releases, Dependabot update proposals, and optionally commercial support consistent with the existing license after the owner clarifies its workflow-specific usage metric. There is no credible basis for subscriptions, usage billing, or paid infrastructure at this stage.
 
 ## Final verification results
 
@@ -162,7 +168,7 @@ Sustainability should remain maintenance-based: small reviewed releases, automat
 | --- | --- |
 | `npm ci --ignore-scripts --no-audit --no-fund --offline` | Pass; installed the one integrity-locked validator dependency. |
 | `npm run check` | Pass; validated all three `.github/workflows` files and required product contracts. |
-| `npm test` / `node --test` | Pass; nine tests cover the repository contract, examples, documentation links, Node fixture, action pins, reusable-job pins, and dot/bracket shell interpolation. |
+| `npm test` / `node --test` | Pass; ten tests cover the repository contract, examples, documentation links, GitHub metadata YAML, Node fixture, action pins, reusable-job pins, and dot/bracket shell interpolation. |
 | `python -m pip install -e .[dev]` in a fresh fixture venv | Pass after standard-library `ensurepip` bootstrapped this host's pip; built the editable fixture and installed pinned pytest `9.1.1`. |
 | `python -m pytest` in the installed fixture | Pass; one test collected and passed on local Python 3.11.9. |
 | Node fixture `npm ci`, lint, typecheck, test, and build defaults | Pass; every default phase exited 0 and one Node test passed. |
@@ -174,11 +180,11 @@ Sustainability should remain maintenance-based: small reviewed releases, automat
 
 1. Owner/external P0 gate: push the branch or open a pull request and require all three `Validate workflows` jobs (`repository`, `python-smoke`, `node-smoke`) to pass on GitHub-hosted runners.
 2. Owner/external P1 gate: create immutable `v0.1.0` only from the verified commit, optionally maintain a documented `v0` compatibility tag, and configure required status checks.
-3. Owner/legal P1 gate: clarify the BSL production-use metric for a workflow invocation and verify the pricing/licensing contact path before inviting commercial adoption.
-4. Owner/security P1 gate: enable GitHub private vulnerability reporting or publish a private security contact.
-5. P2: complete the truncated Code of Conduct after selecting its version and confidential enforcement contact.
+3. Owner/legal P1 gate: clarify the BSL production-use metric for a workflow invocation before inviting commercial adoption.
+4. Owner/branding P2 gate: rename or transfer the GitHub repository if desired, then update every caller reference in one coordinated release.
+5. Optional owner/security P2: enable GitHub private vulnerability reporting in addition to `support@samsarix.com`.
 6. P2 after user evidence: consider uv/Poetry and pnpm/Yarn contracts; do not add them speculatively.
 
 ### Release disposition
 
-Release candidate with named external gates. No locally actionable P0 remains, local installation and validation pass, the primary Python and Node command journeys pass, and complete source security coverage found no reportable issue. It is not release-ready until the GitHub-hosted caller jobs pass and the owner completes tag, legal, and private-reporting decisions.
+Release candidate with named external gates. No locally actionable P0 remains, local installation and validation pass, the primary Python and Node command journeys pass, and complete source security coverage found no reportable issue. It is not release-ready until the GitHub-hosted caller jobs pass and the owner completes the tag and workflow-specific license decision; repository renaming and GitHub private reporting are optional follow-ups.

@@ -4,6 +4,10 @@ All notable changes will be documented in this file. The project follows Semanti
 
 ## Unreleased
 
+- Rebrand the product and repository metadata as Samsarix Workflows by Samsarix LLC.
+- Publish verified support, conduct, commercial-contact, and pricing endpoints.
+- Define private vulnerability reporting, security boundaries, invariants, and finding criteria.
+- Add dependency maintenance configuration and structured GitHub issue and pull-request templates.
 - Restore the repository as a real reusable-workflow product.
 - Add callable Python and npm CI workflows with bounded, configurable matrices.
 - Add SHA-pinned actions, least-privilege permissions, job timeouts, validation tooling, tests, and consumer smoke fixtures.

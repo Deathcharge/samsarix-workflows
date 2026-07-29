@@ -1,6 +1,6 @@
-# Contributing to Helix Workflows
+# Contributing to Samsarix Workflows
 
-Helix Workflows is intentionally small. Contributions should improve the Python or npm reusable CI contracts, their validation, or their verified documentation without adding deployment, credentials, or unrelated platform scope.
+Samsarix Workflows is intentionally small. Contributions should improve the Python or npm reusable CI contracts, their validation, or their verified documentation without adding deployment, credentials, or unrelated platform scope.
 
 ## Set up
 
@@ -55,8 +55,8 @@ Avoid drive-by dependency upgrades, generated formatting churn, and unrelated do
 
 ## Security reports
 
-Do not disclose credentials, private workflow logs, or suspected exploitable behavior in a public issue. Use the repository owner's private GitHub security-reporting channel if it is enabled. If no private channel is available, ask the owner for one without including sensitive details.
+Follow [`SECURITY.md`](SECURITY.md). Do not disclose credentials, private workflow logs, or suspected exploitable behavior in a public issue. Email `support@samsarix.com` with the subject prefix `[SECURITY] Samsarix Workflows`; include only the minimum detail needed to begin a private investigation.
 
 ## Conduct and license
 
-Participation is governed by [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Contributions are accepted under the repository's existing [`LICENSE`](LICENSE); contributors should not change license terms without explicit owner approval.
+Participation is governed by [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Contributions are accepted under the repository's existing [`LICENSE`](LICENSE); contributors should not change license terms without explicit owner approval. General project questions may be sent to `contact@samsarix.com`.

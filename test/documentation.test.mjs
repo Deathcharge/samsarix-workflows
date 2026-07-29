@@ -8,7 +8,14 @@ import { parseDocument } from "yaml";
 const ROOT = path.resolve(import.meta.dirname, "..");
 
 test("local Markdown links resolve to checked-in paths", () => {
-  const markdownFiles = ["README.md", "CONTRIBUTING.md", "docs/PRODUCTIZATION.md"];
+  const markdownFiles = [
+    "README.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+    ".github/PULL_REQUEST_TEMPLATE.md",
+    "docs/PRODUCTIZATION.md",
+  ];
   const missing = [];
 
   for (const filename of markdownFiles) {
@@ -22,6 +29,28 @@ test("local Markdown links resolve to checked-in paths", () => {
   }
 
   assert.deepEqual(missing, []);
+});
+
+test("repository metadata YAML is well formed", () => {
+  const metadataFiles = [
+    ".github/dependabot.yml",
+    ".github/ISSUE_TEMPLATE/bug_report.yml",
+    ".github/ISSUE_TEMPLATE/config.yml",
+    ".github/ISSUE_TEMPLATE/feature_request.yml",
+  ];
+
+  for (const filename of metadataFiles) {
+    const document = parseDocument(fs.readFileSync(path.join(ROOT, filename), "utf8"), {
+      strict: true,
+      uniqueKeys: true,
+    });
+    assert.deepEqual(document.errors, [], filename);
+
+    if (filename === ".github/dependabot.yml") {
+      const ecosystems = document.toJS().updates.map((update) => update["package-ecosystem"]);
+      assert.deepEqual(ecosystems.sort(), ["github-actions", "npm", "pip"]);
+    }
+  }
 });
 
 test("copyable caller examples are valid YAML with the expected workflow targets", () => {

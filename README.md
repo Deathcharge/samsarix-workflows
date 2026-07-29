@@ -1,12 +1,14 @@
-# Helix Workflows
+# Samsarix Workflows
 
 Reusable, least-privilege GitHub Actions CI for modern Python and npm projects.
 
-Helix Workflows gives maintainers one reviewed CI contract they can call from many repositories. It checks out the caller repository, prepares a bounded runtime matrix, runs the caller's trusted install/quality/test/build commands, fails on the first broken step in each job, and writes a short job summary.
+Maintained by [Samsarix LLC](https://samsarix.com).
+
+Samsarix Workflows gives maintainers one reviewed CI contract they can call from many repositories. It checks out the caller repository, prepares a bounded runtime matrix, runs the caller's trusted install/quality/test/build commands, fails on the first broken step in each job, and writes a short job summary.
 
 **Maturity:** release candidate. The workflow files, local validators, negative security tests, and fixture commands pass locally. The final external gate is a successful run of this repository's `Validate workflows` pipeline on GitHub-hosted runners, followed by the owner-created first release tag.
 
-This repository is independent of `helix-unified` and requires no Helix service, account, API, database, or secret.
+This repository is independently usable and requires no Samsarix service, account, API, database, or secret. The GitHub repository remains at `Deathcharge/helix-workflows` until its owner renames or transfers that external coordinate.
 
 ## Choose a workflow
 
@@ -176,11 +178,11 @@ The workflows have no database, network service, telemetry, user accounts, or re
 - No secrets are declared or inherited. Private dependency authentication is deliberately caller-owned and not part of the first-release contract.
 - Commands fail closed. Optional steps are skipped only when their input is explicitly empty or, for npm lint/type-check/build, when the named script is absent.
 - Every job has a timeout; the matrix uses `fail-fast: false` by default so one runtime does not hide compatibility results from another.
-- Logs and summaries are stored by GitHub under the caller's retention settings. Helix Workflows collects nothing independently.
+- Logs and summaries are stored by GitHub under the caller's retention settings. Samsarix Workflows collects nothing independently.
 - Default cost is two runner jobs per called workflow. The hard ceiling is 40 runner-minutes per workflow call (two versions × 20 minutes); actual billed time depends on GitHub's plan, runner, and command duration. Reduce the version array and timeout for tighter budgets.
 - Dependencies are downloaded by the caller's package manager and GitHub setup actions. Review lockfiles and dependency sources in each caller repository.
 
-Please report suspected vulnerabilities privately through the repository owner's established GitHub security-reporting channel if enabled. Do not include credentials or sensitive logs in a public issue. A repository-wide security policy and private reporting contact remain owner-controlled release follow-ups.
+Follow [`SECURITY.md`](SECURITY.md) and report suspected vulnerabilities privately to `support@samsarix.com` with the subject prefix `[SECURITY] Samsarix Workflows`. Do not include credentials or sensitive logs in a public issue. GitHub private vulnerability reporting can be enabled later as an additional owner-controlled channel.
 
 ## Limitations
 
@@ -203,8 +205,8 @@ This repository does not publish to npm, PyPI, GitHub Packages, or any cloud ser
 
 ## Contributing and support
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the required local checks and workflow contract rules. Use [GitHub Issues](https://github.com/Deathcharge/helix-workflows/issues) for reproducible bugs and narrowly scoped feature requests; do not send secrets in issues.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the required local checks and workflow contract rules and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) for community expectations. Use [GitHub Issues](https://github.com/Deathcharge/helix-workflows/issues) for reproducible bugs and narrowly scoped feature requests, `support@samsarix.com` for private support or security matters, and `contact@samsarix.com` for general or commercial inquiries. Do not send secrets in issues.
 
 ## License
 
-The repository currently contains a Business Source License 1.1 grant with a change date of June 16, 2027, after which the stated change license is Apache License 2.0. The license text includes additional production-use terms. Read [`LICENSE`](LICENSE) and obtain owner/legal advice for commercial use. This productization work does not alter or interpret those terms.
+The repository contains a Business Source License 1.1 grant from Samsarix LLC with a change date of June 16, 2027, after which the stated change license is Apache License 2.0. The license text includes additional production-use terms. Read [`LICENSE`](LICENSE) and obtain owner/legal advice for commercial use. The branding update changes identifying and contact information without interpreting the license terms.

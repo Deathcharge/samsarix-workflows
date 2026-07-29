@@ -1,8 +1,8 @@
 {
-  "name": "helix-workflows-tooling",
+  "name": "samsarix-workflows-tooling",
   "version": "0.1.0",
   "private": true,
-  "description": "Validation tooling for the Helix reusable GitHub Actions workflows",
+  "description": "Validation tooling for the Samsarix reusable GitHub Actions workflows",
   "type": "module",
   "engines": {
     "node": ">=20"

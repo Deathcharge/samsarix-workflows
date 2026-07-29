@@ -89,43 +89,43 @@ jobs:
         if: ${{ inputs.install-command != '' }}
         working-directory: ${{ inputs.working-directory }}
         env:
-          HELIX_COMMAND: ${{ inputs.install-command }}
-        run: bash -euo pipefail -c "$HELIX_COMMAND"
+          SAMSARIX_COMMAND: ${{ inputs.install-command }}
+        run: bash -euo pipefail -c "$SAMSARIX_COMMAND"
 
       - name: Lint
         if: ${{ inputs.lint-command != '' }}
         working-directory: ${{ inputs.working-directory }}
         env:
-          HELIX_COMMAND: ${{ inputs.lint-command }}
-        run: bash -euo pipefail -c "$HELIX_COMMAND"
+          SAMSARIX_COMMAND: ${{ inputs.lint-command }}
+        run: bash -euo pipefail -c "$SAMSARIX_COMMAND"
 
       - name: Type check
         if: ${{ inputs.typecheck-command != '' }}
         working-directory: ${{ inputs.working-directory }}
         env:
-          HELIX_COMMAND: ${{ inputs.typecheck-command }}
-        run: bash -euo pipefail -c "$HELIX_COMMAND"
+          SAMSARIX_COMMAND: ${{ inputs.typecheck-command }}
+        run: bash -euo pipefail -c "$SAMSARIX_COMMAND"
 
       - name: Test
         if: ${{ inputs.test-command != '' }}
         working-directory: ${{ inputs.working-directory }}
         env:
-          HELIX_COMMAND: ${{ inputs.test-command }}
-        run: bash -euo pipefail -c "$HELIX_COMMAND"
+          SAMSARIX_COMMAND: ${{ inputs.test-command }}
+        run: bash -euo pipefail -c "$SAMSARIX_COMMAND"
 
       - name: Build
         if: ${{ inputs.build-command != '' }}
         working-directory: ${{ inputs.working-directory }}
         env:
-          HELIX_COMMAND: ${{ inputs.build-command }}
-        run: bash -euo pipefail -c "$HELIX_COMMAND"
+          SAMSARIX_COMMAND: ${{ inputs.build-command }}
+        run: bash -euo pipefail -c "$SAMSARIX_COMMAND"
 
       - name: Write job summary
         if: ${{ always() }}
         env:
-          HELIX_JOB_STATUS: ${{ job.status }}
-          HELIX_RUNTIME_VERSION: ${{ matrix.python-version }}
+          SAMSARIX_JOB_STATUS: ${{ job.status }}
+          SAMSARIX_RUNTIME_VERSION: ${{ matrix.python-version }}
         run: |
           printf '### Python CI\n\n' >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- Version: `%s`\n' "$HELIX_RUNTIME_VERSION" >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- Result: **%s**\n' "$HELIX_JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- Version: `%s`\n' "$SAMSARIX_RUNTIME_VERSION" >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- Result: **%s**\n' "$SAMSARIX_JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"
