@@ -1,0 +1,25 @@
+name: Polyglot CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    uses: Deathcharge/samsarix-workflows/.github/workflows/uv-ci.yml@master
+    with:
+      working-directory: apps/backend
+      cache-dependency-glob: apps/backend/uv.lock
+      max-parallel: 2
+
+  frontend:
+    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@master
+    with:
+      working-directory: apps/frontend
+      cache-dependency-path: apps/frontend/package-lock.json
+      max-parallel: 2

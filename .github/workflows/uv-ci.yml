@@ -1,4 +1,4 @@
-name: Reusable Python CI
+name: Reusable uv CI
 
 on:
   workflow_call:
@@ -8,6 +8,11 @@ on:
         required: false
         type: string
         default: '["3.12", "3.14"]'
+      uv-version:
+        description: Exact uv version installed by the pinned setup action.
+        required: false
+        type: string
+        default: '0.12.0'
       runs-on:
         description: GitHub-hosted runner label.
         required: false
@@ -18,16 +23,16 @@ on:
         required: false
         type: string
         default: .
-      cache-dependency-path:
-        description: Dependency file or glob used for the pip cache key.
+      cache-dependency-glob:
+        description: Dependency file or glob used for the uv cache key.
         required: false
         type: string
-        default: '**/pyproject.toml'
-      install-command:
-        description: Trusted repository command used to install the project and test dependencies. Empty skips installation.
+        default: '**/uv.lock'
+      sync-command:
+        description: Trusted repository command used to sync the locked environment. Empty skips synchronization.
         required: false
         type: string
-        default: python -m pip install -e '.[dev]'
+        default: uv sync --locked
       lint-command:
         description: Trusted repository lint command. Empty skips linting.
         required: false
@@ -42,7 +47,7 @@ on:
         description: Trusted repository test command. Empty skips tests.
         required: false
         type: string
-        default: python -m pytest
+        default: uv run --locked pytest
       build-command:
         description: Trusted repository build command. Empty skips the build.
         required: false
@@ -69,7 +74,7 @@ permissions:
 
 jobs:
   ci:
-    name: Python ${{ matrix.python-version }}
+    name: uv / Python ${{ matrix.python-version }}
     runs-on: ${{ inputs.runs-on }}
     timeout-minutes: ${{ inputs.timeout-minutes }}
     strategy:
@@ -84,18 +89,21 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - name: Set up uv and Python
+        id: setup-uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
+          version: ${{ inputs.uv-version }}
           python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: ${{ inputs.cache-dependency-path }}
+          working-directory: ${{ inputs.working-directory }}
+          enable-cache: true
+          cache-dependency-glob: ${{ inputs.cache-dependency-glob }}
 
-      - name: Install dependencies
-        if: ${{ inputs.install-command != '' }}
+      - name: Sync locked environment
+        if: ${{ inputs.sync-command != '' }}
         working-directory: ${{ inputs.working-directory }}
         env:
-          SAMSARIX_COMMAND: ${{ inputs.install-command }}
+          SAMSARIX_COMMAND: ${{ inputs.sync-command }}
         run: bash -euo pipefail -c "$SAMSARIX_COMMAND"
 
       - name: Lint
@@ -130,8 +138,10 @@ jobs:
         if: ${{ always() }}
         env:
           SAMSARIX_JOB_STATUS: ${{ job.status }}
-          SAMSARIX_RUNTIME_VERSION: ${{ matrix.python-version }}
+          SAMSARIX_PYTHON_VERSION: ${{ matrix.python-version }}
+          SAMSARIX_UV_VERSION: ${{ steps.setup-uv.outputs.uv-version }}
         run: |
-          printf '### Python CI\n\n' >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- Version: `%s`\n' "$SAMSARIX_RUNTIME_VERSION" >> "$GITHUB_STEP_SUMMARY"
+          printf '### uv CI\n\n' >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- Python: `%s`\n' "$SAMSARIX_PYTHON_VERSION" >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- uv: `%s`\n' "$SAMSARIX_UV_VERSION" >> "$GITHUB_STEP_SUMMARY"
           printf -- '- Result: **%s**\n' "$SAMSARIX_JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"

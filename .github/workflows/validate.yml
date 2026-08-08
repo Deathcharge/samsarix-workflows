@@ -63,6 +63,17 @@ jobs:
       cache-dependency-path: test/fixtures/python/pyproject.toml
       timeout-minutes: 10
 
+  uv-smoke:
+    name: uv consumer smoke test
+    permissions:
+      contents: read
+    uses: ./.github/workflows/uv-ci.yml
+    with:
+      python-versions: '["3.14"]'
+      working-directory: test/fixtures/uv
+      cache-dependency-glob: test/fixtures/uv/uv.lock
+      timeout-minutes: 10
+
   node-smoke:
     name: Node consumer smoke test
     permissions:

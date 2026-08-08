@@ -6,7 +6,7 @@ import { parseDocument } from "yaml";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WORKFLOWS_DIR = path.join(ROOT, ".github", "workflows");
-const REUSABLE_WORKFLOWS = new Set(["node-ci.yml", "python-ci.yml"]);
+const REUSABLE_WORKFLOWS = new Set(["node-ci.yml", "python-ci.yml", "uv-ci.yml"]);
 const SHA_PIN = /^[^\s/@]+\/[^\s@]+(?:\/[^\s@]+)?@[0-9a-f]{40}$/;
 const DIRECT_UNTRUSTED_RUN_EXPRESSION =
   /\$\{\{\s*(?:inputs(?:\.|\[)|github(?:\.event|\[['"]event['"]\]))/;
@@ -68,6 +68,11 @@ export function validateWorkflowText(source, filename, { reusable = false } = {}
     }
     if (!("uses" in job) && !("timeout-minutes" in job)) {
       errors.push(`job ${jobName} must set a timeout`);
+    }
+    if (reusable && !("uses" in job)) {
+      if (!isObject(job.strategy) || !("max-parallel" in job.strategy)) {
+        errors.push(`job ${jobName} must bound matrix concurrency with strategy.max-parallel`);
+      }
     }
   }
 

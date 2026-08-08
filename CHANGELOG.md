@@ -4,6 +4,9 @@ All notable changes will be documented in this file. The project follows Semanti
 
 ## Unreleased
 
+- Add a first-class uv CI contract with exact uv installation, locked sync/test defaults, cache support, a consumer fixture, and a copyable caller.
+- Add caller-configurable `max-parallel` limits to every reusable matrix so maintainers can bound concurrent runner spend.
+- Add a polyglot uv/npm monorepo caller example and native Dependabot coverage for the uv fixture.
 - Rebrand the product and repository metadata as Samsarix Workflows by Samsarix LLC.
 - Publish verified support, conduct, commercial-contact, and pricing endpoints.
 - Define private vulnerability reporting, security boundaries, invariants, and finding criteria.

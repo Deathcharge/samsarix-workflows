@@ -22,8 +22,10 @@ commit snapshots are not independently supported.
 
 ## System and Scope
 
-Samsarix Workflows is a public library of reusable GitHub Actions CI workflows
-for Python and Node.js/npm repositories. It does not operate a hosted service,
+Samsarix Workflows is a library of reusable GitHub Actions CI workflows for uv,
+pip-compatible Python, and Node.js/npm repositories. The GitHub repository is
+currently private, so caller exposure depends on repository visibility and the
+configured Actions access policy. It does not operate a hosted service,
 database, API, account system, or telemetry system.
 
 Security review covers:
@@ -61,7 +63,8 @@ runner capacity.
 - External actions and reusable workflows use full commit SHA references.
 - Event data and workflow inputs are not interpolated directly into shell source.
 - Trusted command inputs pass through environment variables and fail closed.
-- Runner jobs declare timeouts and use conservative default matrices.
+- Runner jobs declare timeouts, bound matrix concurrency, and use conservative
+  default matrices.
 - Validation must reject regressions in these properties.
 - Logs and job summaries must not intentionally expose credentials or secrets.
 
@@ -107,7 +110,8 @@ Command inputs intentionally contain shell language and therefore require
 maintainer-level trust. GitHub-hosted behavior cannot be reproduced perfectly
 locally. The repository compensates with locked validation tooling, negative
 tests, consumer fixtures, full-SHA action pins, actionlint, read-only
-permissions, non-persisted checkout credentials, and job timeouts.
+permissions, non-persisted checkout credentials, matrix concurrency bounds, and
+job timeouts.
 
 Full-SHA pins require ongoing maintenance; Dependabot may propose updates, but
 each proposal still requires review. GitHub private vulnerability reporting is

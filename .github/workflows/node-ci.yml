@@ -53,6 +53,11 @@ on:
         required: false
         type: boolean
         default: false
+      max-parallel:
+        description: Maximum matrix jobs allowed to run at the same time.
+        required: false
+        type: number
+        default: 2
       timeout-minutes:
         description: Maximum runtime for each matrix job.
         required: false
@@ -69,6 +74,7 @@ jobs:
     timeout-minutes: ${{ inputs.timeout-minutes }}
     strategy:
       fail-fast: ${{ inputs.fail-fast }}
+      max-parallel: ${{ inputs.max-parallel }}
       matrix:
         node-version: ${{ fromJSON(inputs.node-versions) }}
 

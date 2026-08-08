@@ -20,7 +20,12 @@ jobs:
 test("the checked-in workflows satisfy the repository contract", () => {
   const result = validateRepository();
   assert.deepEqual(result.errors, []);
-  assert.deepEqual(result.filenames, ["node-ci.yml", "python-ci.yml", "validate.yml"]);
+  assert.deepEqual(result.filenames, ["node-ci.yml", "python-ci.yml", "uv-ci.yml", "validate.yml"]);
+});
+
+test("reusable workflow matrices must bound parallel jobs", () => {
+  const errors = validateWorkflowText(minimalWorkflow, "bad.yml", { reusable: true });
+  assert(errors.some((error) => error.includes("strategy.max-parallel")));
 });
 
 test("a reusable workflow must expose workflow_call", () => {
