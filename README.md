@@ -6,7 +6,7 @@ Maintained by [Samsarix LLC](https://samsarix.com).
 
 Samsarix Workflows gives maintainers one reviewed CI contract they can call from many repositories. It checks out the caller repository, prepares a bounded runtime matrix, runs the caller's trusted install/quality/test/build commands, fails on the first broken step in each job, and writes a short job summary.
 
-**Maturity:** release candidate. The workflow files, local validators, negative security tests, and fixture commands pass locally. The final external gate is a successful run of this repository's `Validate workflows` pipeline on GitHub-hosted runners, followed by the owner-created first release tag.
+**Maturity:** release candidate. The workflow files, local validators, negative security tests, and fixture commands pass locally. Every release candidate must also pass this repository's `Validate workflows` pipeline on GitHub-hosted runners before merge and release.
 
 This repository is independently usable and requires no Samsarix service, account, API, database, or secret. Its canonical GitHub coordinate is `Deathcharge/samsarix-workflows`.
 
@@ -53,7 +53,7 @@ permissions:
 
 jobs:
   ci:
-    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@master
+    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
     with:
       lint-command: python -m ruff check .
       typecheck-command: python -m mypy .
@@ -76,12 +76,12 @@ permissions:
 
 jobs:
   ci:
-    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@master
+    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
 ```
 
-`@master` is the evaluation reference until the first release exists. For production use, replace it with the full 40-character commit SHA from a successful release, for example `@0123456789abcdef0123456789abcdef01234567`. A future moving `@v0` tag may be more convenient but is less tamper-resistant than a commit SHA.
+The examples pin commit `3a0309cd76820de898f4ff250cfbe01009c8598a`, the immutable revision containing the documented workflow contracts. Review release notes and update this SHA deliberately. A moving major tag may be more convenient, but a commit SHA is more resistant to reference retargeting.
 
-This repository is currently private. GitHub only permits cross-repository calls when the caller can access this repository and the repository's Actions access policy allows it. Public, general-purpose distribution therefore still requires an owner-controlled visibility or access-policy decision.
+The public repository can be called from other GitHub repositories without a Samsarix account. The caller still owns its GitHub Actions availability, policy, runner use, and billing.
 
 Push the caller file or open a pull request. GitHub shows one job per requested runtime. Failed install, lint, type-check, test, and build phases remain separate named steps, so the failing command is visible and reproducible locally. Fix the command and use GitHub's **Re-run failed jobs** action; there is no hidden retry loop.
 
@@ -109,7 +109,7 @@ Example for a project using a requirements file and the standard library test ru
 ```yaml
 jobs:
   ci:
-    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@master
+    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
     with:
       python-versions: '["3.13", "3.14"]'
       cache-dependency-path: requirements-dev.txt
@@ -159,7 +159,7 @@ Monorepo example:
 ```yaml
 jobs:
   web:
-    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@master
+    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
     with:
       working-directory: apps/web
       cache-dependency-path: apps/web/package-lock.json
@@ -183,9 +183,9 @@ npm run check
 npm test
 ```
 
-- `npm run check` parses every workflow, verifies all reusable contracts exist, enforces read-only permissions, bounded matrix concurrency, timeouts and full action SHAs, checks checkout credential persistence, and rejects direct event/input interpolation in shell scripts.
-- `npm test` runs the validator's negative tests and the Node consumer fixture through Node's built-in test runner.
-- [`validate.yml`](.github/workflows/validate.yml) repeats those checks, downloads actionlint `v1.7.12` from its versioned release, verifies the archive SHA-256, runs actionlint, and calls all three reusable workflows against minimal consumer fixtures.
+- `npm run check` parses every workflow and caller example. It verifies the reusable contracts, exact default budgets, read-only workflow and job permissions, secret/token isolation, full action SHAs, checkout credential removal, and fail-closed shell behavior. It also rejects local action indirection and direct GitHub-expression interpolation in shell scripts.
+- `npm test` runs adversarial validator regressions, documentation/contract assertions, and the Node consumer fixture through Node's built-in test runner.
+- [`validate.yml`](.github/workflows/validate.yml) first downloads actionlint `v1.7.12` into a fresh runner-temporary directory, verifies the archive SHA-256, and runs it before repository-controlled npm code. It then repeats repository checks and calls all three reusable workflows against minimal consumer fixtures.
 
 There is no service to start and no distributable package to build. The release artifact is the tagged Git tree containing `.github/workflows/*.yml`.
 
@@ -211,7 +211,7 @@ The workflows have no database, network service, telemetry, user accounts, or re
 - The default matrix has a configured ceiling of 40 runner-minutes per workflow call (two versions × 20 minutes), with at most two jobs running concurrently; actual billed time depends on GitHub's plan, runner, and command duration. Reduce the version array or timeout to lower the ceiling. Reduce `max-parallel` to limit concurrent capacity, not total runner-minutes.
 - Dependencies are downloaded by the caller's package manager and GitHub setup actions. Review lockfiles and dependency sources in each caller repository.
 
-Follow [`SECURITY.md`](SECURITY.md) and report suspected vulnerabilities privately to `support@samsarix.com` with the subject prefix `[SECURITY] Samsarix Workflows`. Do not include credentials or sensitive logs in a public issue. GitHub private vulnerability reporting can be enabled later as an additional owner-controlled channel.
+Follow [`SECURITY.md`](SECURITY.md) and report suspected vulnerabilities through GitHub's private **Report a vulnerability** form or to `support@samsarix.com` with the subject prefix `[SECURITY] Samsarix Workflows`. Do not include credentials or sensitive logs in a public issue.
 
 ## Limitations
 
@@ -219,15 +219,15 @@ Follow [`SECURITY.md`](SECURITY.md) and report suspected vulnerabilities private
 - Poetry, pnpm, Yarn, Windows, macOS, service containers, coverage upload, package publication, deployment, and provenance generation are out of scope.
 - Callers cannot append steps to a job that calls a reusable workflow; create a separate dependent job when extra behavior is needed.
 - GitHub-hosted execution cannot be perfectly reproduced locally. A branch push or pull request is required for the final smoke test.
-- The existing BSL production-use metric is ambiguous for workflow invocations; organizations considering commercial production use should obtain owner/legal clarification.
+- This is source-available software under BSL 1.1, not open-source software before the Change Date. Organizations should review the license and obtain counsel for commercial reliance.
 
 ## Releases and updates
 
-There is no published tag yet. [`CHANGELOG.md`](CHANGELOG.md) records the proposed `v0.1.0` scope. The owner-controlled release process is:
+[`CHANGELOG.md`](CHANGELOG.md) records the `v0.1.0` scope. Every release follows this process:
 
 1. merge after `Validate workflows` passes on GitHub;
-2. create immutable tag `v0.1.0` and a GitHub Release;
-3. optionally move a documented compatibility tag `v0` to that commit;
+2. create an immutable version tag and GitHub Release from the verified default-branch commit;
+3. optionally maintain a documented moving compatibility tag;
 4. update consumers deliberately, preferably through reviewed dependency-update pull requests.
 
 This repository does not publish to npm, PyPI, GitHub Packages, or any cloud service.
@@ -238,4 +238,4 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the required local checks and workf
 
 ## License
 
-The repository contains a Business Source License 1.1 grant from Samsarix LLC with a change date of June 16, 2027, after which the stated change license is Apache License 2.0. The license text includes additional production-use terms. Read [`LICENSE`](LICENSE) and obtain owner/legal advice for commercial use. The branding update changes identifying and contact information without interpreting the license terms.
+Samsarix LLC distributes this source under the Business Source License 1.1. The Additional Use Grant permits up to 1,000 Workflow Calls per calendar month; one initial caller-job invocation or re-run is one call, while its matrix expansion is not. On June 16, 2027, or the earlier date required by BSL 1.1, the applicable version converts to Apache License 2.0. This is source-available rather than open source before that conversion. Read [`LICENSE`](LICENSE); this summary is not legal advice and does not replace the license.

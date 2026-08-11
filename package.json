@@ -2,6 +2,7 @@
   "name": "samsarix-workflows-tooling",
   "version": "0.1.0",
   "private": true,
+  "license": "BUSL-1.1",
   "description": "Validation tooling for the Samsarix reusable GitHub Actions workflows",
   "type": "module",
   "engines": {

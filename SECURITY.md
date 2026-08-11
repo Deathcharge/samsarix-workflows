@@ -5,6 +5,9 @@
 Report suspected vulnerabilities privately to `support@samsarix.com` with the
 subject prefix `[SECURITY] Samsarix Workflows`.
 
+The repository's GitHub **Security → Report a vulnerability** form is also a
+private reporting channel.
+
 Do not open a public issue for suspected exploitable behavior. Include the
 affected workflow or file, the exact tag or commit SHA, realistic impact,
 minimal reproduction steps, and sanitized logs. Never send active credentials,
@@ -22,11 +25,10 @@ commit snapshots are not independently supported.
 
 ## System and Scope
 
-Samsarix Workflows is a library of reusable GitHub Actions CI workflows for uv,
-pip-compatible Python, and Node.js/npm repositories. The GitHub repository is
-currently private, so caller exposure depends on repository visibility and the
-configured Actions access policy. It does not operate a hosted service,
-database, API, account system, or telemetry system.
+Samsarix Workflows is a publicly distributed library of reusable GitHub Actions
+CI workflows for uv, pip-compatible Python, and Node.js/npm repositories. It
+does not operate a hosted service, database, API, account system, or telemetry
+system.
 
 Security review covers:
 
@@ -57,14 +59,20 @@ runner capacity.
 
 ## Security Invariants
 
-- Top-level permissions grant only `contents: read`.
-- Reusable workflows do not declare or inherit secrets.
+- Workflow-level and job-level permissions grant at most `contents: read`.
+- Reusable workflows do not declare or inherit secrets, select environments,
+  or reference `secrets` or `github.token` expressions.
 - Checkout credentials are not persisted for caller commands.
 - External actions and reusable workflows use full commit SHA references.
-- Event data and workflow inputs are not interpolated directly into shell source.
+- GitHub expressions are not interpolated directly into shell source.
 - Trusted command inputs pass through environment variables and fail closed.
-- Runner jobs declare timeouts, bound matrix concurrency, and use conservative
-  default matrices.
+- Runner jobs declare input-wired timeouts and matrix concurrency. Default
+  values create no more than two jobs, at most two concurrent jobs, and at most
+  40 configured runner-minutes per workflow call.
+- Required jobs and steps do not use `continue-on-error`, unconditional false
+  predicates, or shell failure suppression.
+- Caller examples use full commit SHAs. Step-level local actions are excluded
+  so nested action behavior cannot escape validation.
 - Validation must reject regressions in these properties.
 - Logs and job summaries must not intentionally expose credentials or secrets.
 
@@ -114,6 +122,5 @@ permissions, non-persisted checkout credentials, matrix concurrency bounds, and
 job timeouts.
 
 Full-SHA pins require ongoing maintenance; Dependabot may propose updates, but
-each proposal still requires review. GitHub private vulnerability reporting is
-an optional additional channel and is not required to use the private support
-address above.
+each proposal still requires review. GitHub private vulnerability reporting and
+the private support address above are both available.
