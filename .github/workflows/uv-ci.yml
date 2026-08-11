@@ -141,7 +141,9 @@ jobs:
           SAMSARIX_PYTHON_VERSION: ${{ matrix.python-version }}
           SAMSARIX_UV_VERSION: ${{ steps.setup-uv.outputs.uv-version }}
         run: |
-          printf '### uv CI\n\n' >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- Python: `%s`\n' "$SAMSARIX_PYTHON_VERSION" >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- uv: `%s`\n' "$SAMSARIX_UV_VERSION" >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- Result: **%s**\n' "$SAMSARIX_JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"
+          {
+            printf '### uv CI\n\n'
+            printf -- '- Python: \x60%s\x60\n' "$SAMSARIX_PYTHON_VERSION"
+            printf -- '- uv: \x60%s\x60\n' "$SAMSARIX_UV_VERSION"
+            printf -- '- Result: **%s**\n' "$SAMSARIX_JOB_STATUS"
+          } >> "$GITHUB_STEP_SUMMARY"

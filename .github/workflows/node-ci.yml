@@ -132,6 +132,8 @@ jobs:
           SAMSARIX_JOB_STATUS: ${{ job.status }}
           SAMSARIX_RUNTIME_VERSION: ${{ matrix.node-version }}
         run: |
-          printf '### Node.js CI\n\n' >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- Version: `%s`\n' "$SAMSARIX_RUNTIME_VERSION" >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- Result: **%s**\n' "$SAMSARIX_JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"
+          {
+            printf '### Node.js CI\n\n'
+            printf -- '- Version: \x60%s\x60\n' "$SAMSARIX_RUNTIME_VERSION"
+            printf -- '- Result: **%s**\n' "$SAMSARIX_JOB_STATUS"
+          } >> "$GITHUB_STEP_SUMMARY"
