@@ -24,7 +24,7 @@ on:
         type: string
         default: .
       cache-dependency-glob:
-        description: Dependency file or glob used for the uv cache key.
+        description: Dependency file or glob relative to working-directory used for the uv cache key.
         required: false
         type: string
         default: '**/uv.lock'

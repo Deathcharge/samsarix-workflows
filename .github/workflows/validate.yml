@@ -70,7 +70,7 @@ jobs:
     with:
       python-versions: '["3.14"]'
       working-directory: test/fixtures/uv
-      cache-dependency-glob: test/fixtures/uv/uv.lock
+      cache-dependency-glob: uv.lock
       timeout-minutes: 10
 
   node-smoke:

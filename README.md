@@ -125,7 +125,7 @@ jobs:
 | `uv-version` | string | `0.12.0` | Exact uv release installed by the pinned official setup action. |
 | `runs-on` | string | `ubuntu-latest` | Runner label selected by trusted workflow configuration. |
 | `working-directory` | string | `.` | uv project or workspace directory. |
-| `cache-dependency-glob` | string | `**/uv.lock` | Repository-relative glob used for the uv cache key. |
+| `cache-dependency-glob` | string | `**/uv.lock` | Glob relative to `working-directory` used for the uv cache key. |
 | `sync-command` | string | `uv sync --locked` | Exact locked sync; empty skips synchronization. |
 | `lint-command` | string | empty | Empty skips linting. |
 | `typecheck-command` | string | empty | Empty skips type checking. |

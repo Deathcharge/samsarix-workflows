@@ -87,6 +87,7 @@ test("the polyglot caller composes both contracts at the verified commit", () =>
     workflow.jobs.frontend.uses,
     `Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@${PINNED_WORKFLOW_SHA}`,
   );
+  assert.equal(workflow.jobs.backend.with["cache-dependency-glob"], "uv.lock");
 });
 
 test("documentation contains no mutable default-branch workflow references", () => {

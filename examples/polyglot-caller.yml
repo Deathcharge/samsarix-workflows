@@ -14,7 +14,7 @@ jobs:
     uses: Deathcharge/samsarix-workflows/.github/workflows/uv-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
     with:
       working-directory: apps/backend
-      cache-dependency-glob: apps/backend/uv.lock
+      cache-dependency-glob: uv.lock
       max-parallel: 2
 
   frontend:
