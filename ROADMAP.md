@@ -31,10 +31,10 @@ Current hardening backlog:
 
 ## Competitive delivery sequence
 
-1. **Locked modern Python:** ship the uv contract with exact tool installation, lockfile enforcement, caching, fixture coverage, and a real caller journey.
-2. **Predictable runner use:** expose bounded matrix parallelism alongside version count and job timeouts; distinguish concurrency from the maximum default runner-minute budget.
-3. **Polyglot repositories:** prove Node and Python contracts compose as separate, independently retryable jobs without an opaque auto-detection layer.
-4. **Release and distribution:** establish immutable tags, release notes, required checks, and a GitHub visibility/Actions-access policy that matches the intended audience.
+1. **Locked modern Python — complete:** shipped the uv contract with exact tool installation, lockfile enforcement, caching, fixture coverage, and a hosted caller journey.
+2. **Predictable runner use — complete:** exposed bounded matrix parallelism alongside version count and job timeouts, with a documented default runner-minute ceiling.
+3. **Polyglot repositories — complete:** proved Node and Python contracts compose as separate, independently retryable jobs without an opaque auto-detection layer.
+4. **Versioned release:** create immutable release notes and a `v0.1.0` tag only from the protected, green default branch.
 5. **Evidence-led expansion:** evaluate pnpm, artifacts/test reports, and non-Ubuntu runners only after caller demand or a Samsarix-owned consumer demonstrates the need.
 
 ## Completion evidence

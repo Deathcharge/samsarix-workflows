@@ -71,8 +71,8 @@ runner capacity.
   40 configured runner-minutes per workflow call.
 - Required jobs and steps do not use `continue-on-error`, unconditional false
   predicates, or shell failure suppression.
-- Caller examples use full commit SHAs. Step-level local actions are excluded
-  so nested action behavior cannot escape validation.
+- Caller examples use full commit SHAs. Step-level local actions are rejected
+  by validation so nested action behavior cannot escape review.
 - Validation must reject regressions in these properties.
 - Logs and job summaries must not intentionally expose credentials or secrets.
 

@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 import { parseDocument } from "yaml";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const WORKFLOWS_DIR = path.join(ROOT, ".github", "workflows");
 const REUSABLE_WORKFLOWS = new Set(["node-ci.yml", "python-ci.yml", "uv-ci.yml"]);
 const CALLER_EXAMPLES = [
   "examples/node-caller.yml",
@@ -16,7 +15,7 @@ const CALLER_EXAMPLES = [
 const SHA_PIN = /^[^\s/@]+\/[^\s@]+(?:\/[^\s@]+)?@[0-9a-f]{40}$/;
 const DIRECT_RUN_EXPRESSION = /\$\{\{/u;
 const SECRET_OR_TOKEN_EXPRESSION =
-  /\$\{\{[\s\S]*?(?:\bsecrets\b|\bgithub\s*(?:\.\s*token\b|\[\s*['"]token['"]\s*\]))/iu;
+  /\$\{\{(?:(?!\}\})[\s\S])*?(?:\bsecrets\b|\bgithub\s*(?:\.\s*token\b|\[\s*['"]token['"]\s*\]))(?:(?!\}\})[\s\S])*?\}\}/iu;
 const FAIL_OPEN_RUN = /(?:\|\|\s*(?:true\b|:)|(?:^|[;\n])\s*set\s+\+e(?=\s|;|$))/u;
 const ALWAYS_FALSE_EXPRESSION = /^\s*\$\{\{\s*false\s*\}\}\s*$/iu;
 const INPUT_EXPRESSION = (name) => `\${{ inputs.${name} }}`;
@@ -242,26 +241,45 @@ export function validateRepository(root = ROOT) {
     );
   }
 
-  for (const filename of CALLER_EXAMPLES) {
+  const exampleDirectory = path.join(root, "examples");
+  const examples = fs.existsSync(exampleDirectory)
+    ? fs
+        .readdirSync(exampleDirectory)
+        .filter((filename) => /\.ya?ml$/u.test(filename))
+        .sort()
+        .map((filename) => path.posix.join("examples", filename))
+    : [];
+
+  if (!fs.existsSync(exampleDirectory)) {
+    errors.push("examples: caller examples directory is missing");
+  }
+
+  for (const filename of examples) {
     const source = fs.readFileSync(path.join(root, filename), "utf8");
     errors.push(...validateWorkflowText(source, filename));
+  }
+
+  for (const expected of CALLER_EXAMPLES) {
+    if (!examples.includes(expected)) {
+      errors.push(`${expected}: required caller example is missing`);
+    }
   }
 
   for (const expected of REUSABLE_WORKFLOWS) {
     if (!filenames.includes(expected)) errors.push(`${expected}: required workflow is missing`);
   }
 
-  return { errors, filenames };
+  return { errors, examples, filenames };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const { errors, filenames } = validateRepository();
+  const { errors, examples, filenames } = validateRepository();
   if (errors.length > 0) {
     console.error(errors.join("\n"));
     process.exitCode = 1;
   } else {
     console.log(
-      `Validated ${filenames.length} workflow files and ${CALLER_EXAMPLES.length} caller examples: ${filenames.join(", ")}`,
+      `Validated ${filenames.length} workflow files and ${examples.length} caller examples: ${filenames.join(", ")}`,
     );
   }
 }

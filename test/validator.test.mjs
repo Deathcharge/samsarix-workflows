@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 
 import { validateRepository, validateWorkflowText } from "../scripts/validate-workflows.mjs";
@@ -43,10 +46,49 @@ function assertRejected(source, fragment, options) {
   );
 }
 
+test("the shared fixture satisfies every reusable workflow rule", () => {
+  assert.deepEqual(errorsFor(minimalWorkflow), []);
+});
+
 test("the checked-in workflows and examples satisfy the repository contract", () => {
   const result = validateRepository();
   assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.examples, [
+    "examples/node-caller.yml",
+    "examples/polyglot-caller.yml",
+    "examples/python-caller.yml",
+    "examples/uv-caller.yml",
+  ]);
   assert.deepEqual(result.filenames, ["node-ci.yml", "python-ci.yml", "uv-ci.yml", "validate.yml"]);
+});
+
+test("repository validation discovers new examples and diagnoses missing required examples", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "samsarix-validator-"));
+  t.after(() => fs.rmSync(root, { force: true, recursive: true }));
+  fs.mkdirSync(path.join(root, ".github", "workflows"), { recursive: true });
+  fs.mkdirSync(path.join(root, "examples"));
+
+  for (const filename of ["node-ci.yml", "python-ci.yml", "uv-ci.yml", "validate.yml"]) {
+    fs.writeFileSync(path.join(root, ".github", "workflows", filename), minimalWorkflow);
+  }
+  for (const filename of ["node-caller.yml", "polyglot-caller.yml", "python-caller.yml", "uv-caller.yml"]) {
+    fs.writeFileSync(path.join(root, "examples", filename), minimalWorkflow);
+  }
+  fs.writeFileSync(
+    path.join(root, "examples", "additional.yml"),
+    minimalWorkflow.replace("echo ok", "echo ${{ github.head_ref }}"),
+  );
+
+  const discovered = validateRepository(root);
+  assert(discovered.examples.includes("examples/additional.yml"));
+  assert(discovered.errors.some((error) => error.startsWith("examples/additional.yml:")));
+
+  fs.rmSync(path.join(root, "examples", "uv-caller.yml"));
+  assert(
+    validateRepository(root).errors.includes(
+      "examples/uv-caller.yml: required caller example is missing",
+    ),
+  );
 });
 
 test("a reusable workflow must expose workflow_call", () => {
@@ -142,6 +184,14 @@ test("secret and workflow-token expressions are rejected in every value", () => 
     );
     assertRejected(source, "references a secret or workflow token");
   }
+});
+
+test("secret prose outside an expression does not create a false positive", () => {
+  const source = minimalWorkflow.replace(
+    "name: Example",
+    'name: "${{ inputs.name }}; never pass secrets here"',
+  );
+  assert.deepEqual(errorsFor(source), []);
 });
 
 test("shell scripts cannot directly interpolate any GitHub expression", () => {
