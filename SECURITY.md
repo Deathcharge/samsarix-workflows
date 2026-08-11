@@ -18,10 +18,9 @@ when appropriate. No fixed response or remediation deadline is promised.
 
 ## Supported Versions
 
-Before the first tagged release, reports are assessed against the latest commit
-selected for the active release candidate. After `v0.1.0`, security fixes will
-target the latest maintained `v0` release. Older tags, branches, and arbitrary
-commit snapshots are not independently supported.
+Security fixes target the latest maintained release in the `v0.x` line,
+beginning with `v0.1.0`. Older tags, branches, and arbitrary commit snapshots
+are not independently supported.
 
 ## System and Scope
 

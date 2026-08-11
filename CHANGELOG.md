@@ -4,6 +4,8 @@ All notable changes will be documented in this file. The project follows Semanti
 
 ## Unreleased
 
+## 0.1.0 - 2026-08-11
+
 - Prepare public distribution with an authentic BSL 1.1 structure, a defined 1,000-Workflow-Call monthly Additional Use Grant, and Apache 2.0 conversion on June 16, 2027.
 - Pin every caller example and README snippet to the verified product-contract commit instead of the mutable default branch.
 - Harden the repository validator against job permission overrides, secrets and workflow tokens, environments, mixed-case checkout, local action indirection, direct GitHub expressions in shell source, fail-open suppression, and ineffective runner budgets.
@@ -21,4 +23,4 @@ All notable changes will be documented in this file. The project follows Semanti
 - Add SHA-pinned actions, least-privilege permissions, job timeouts, validation tooling, tests, and consumer smoke fixtures.
 - Replace inaccurate product documentation with verified setup, contracts, limitations, and release guidance.
 
-The first versioned release is `v0.1.0` after the exact commit passes all local, pull-request, and post-merge GitHub smoke gates.
+`v0.1.0` establishes the first independently usable, protected, and hosted-verified Samsarix Workflows contract.
