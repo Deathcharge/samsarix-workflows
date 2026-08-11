@@ -1,6 +1,6 @@
 # Contributing to Samsarix Workflows
 
-Samsarix Workflows is intentionally small. Contributions should improve the Python or npm reusable CI contracts, their validation, or their verified documentation without adding deployment, credentials, or unrelated platform scope.
+Samsarix Workflows is intentionally focused. Contributions should improve the uv, pip-compatible Python, or npm reusable CI contracts, their validation, or their verified documentation without adding deployment, credentials, or unrelated platform scope.
 
 ## Set up
 
@@ -10,25 +10,29 @@ Prerequisites:
 - Node.js 20 or newer;
 - npm with lockfile support;
 - Python 3.12 or newer when changing the Python fixture.
+- uv 0.12.0 when changing the locked uv fixture.
 
 ```bash
 git clone https://github.com/Deathcharge/samsarix-workflows.git
-cd helix-workflows
+cd samsarix-workflows
 npm ci
 npm run check
 npm test
 ```
 
-Create a focused branch, make the smallest coherent change, and rerun all three commands. A pull request must also pass the GitHub-hosted `Validate workflows` pipeline, including actionlint and both consumer smoke jobs.
+Create a focused branch, make the smallest coherent change, and rerun all three commands. A pull request must also pass the GitHub-hosted `Validate workflows` pipeline, including actionlint and all consumer smoke jobs.
 
 ## Workflow contract rules
 
 - Product workflows live directly in `.github/workflows/` and declare only `on.workflow_call`.
-- Keep permissions at `contents: read` unless a separate, evidence-backed product contract genuinely requires more. Do not add `secrets: inherit`.
+- Keep workflow and job permissions at no more than `contents: read`. Do not declare or inherit secrets, reference `secrets` or `github.token`, or select a protected environment.
 - Pin every external action to a full 40-character commit SHA and record the human release version in a comment.
+- Pin every external reusable-workflow caller to a reviewed full commit SHA.
 - Set `persist-credentials: false` on checkout.
 - Set a bounded timeout on every runner job.
-- Never interpolate `inputs` or `github.event` values directly into a `run` script. Trusted command inputs must travel through an environment variable.
+- Bound every reusable matrix with numeric `max-parallel` and `timeout-minutes` inputs, exact job wiring, and defaults of no more than two jobs and 40 configured runner-minutes.
+- Never interpolate a GitHub expression directly into a `run` script. Trusted command inputs must travel through an environment variable.
+- Do not use step-level local actions; all executed action code must be visible to full-SHA and checkout validation.
 - Do not suppress failing quality, test, build, security, release, or publication commands with `continue-on-error`, `|| true`, or redirected errors.
 - Keep defaults conservative in runner minutes and network usage.
 - Add or update a consumer fixture when behavior changes.
@@ -36,7 +40,7 @@ Create a focused branch, make the smallest coherent change, and rerun all three 
 
 ## Tests
 
-`npm run check` validates repository-specific security and contract invariants. `npm test` runs negative validator tests and fixture tests. The repository CI additionally runs actionlint and invokes both reusable workflows as real caller jobs.
+`npm run check` validates repository-specific security and contract invariants. `npm test` runs negative validator tests and fixture tests. The repository CI additionally runs actionlint and invokes all reusable workflows as real caller jobs.
 
 When fixing a bug, add the smallest regression test that fails before the fix. Do not make the validator accept invalid workflows merely to silence a check; fix the workflow or document a narrow, tested exception.
 

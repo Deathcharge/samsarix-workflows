@@ -27,3 +27,12 @@ updates:
       time: '09:30'
       timezone: America/New_York
     open-pull-requests-limit: 5
+
+  - package-ecosystem: uv
+    directory: /test/fixtures/uv
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:45'
+      timezone: America/New_York
+    open-pull-requests-limit: 5

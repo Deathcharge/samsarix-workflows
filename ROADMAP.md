@@ -4,17 +4,17 @@ This roadmap separates four gates: merge, release, publication, and flagship ado
 
 ## Product boundary
 
-Portfolio role: **internal infrastructure**. Use this to improve the portfolio through immutable, reviewed automation or internal deployments. It must not become a hidden runtime dependency for customer-facing products.
-Planned repository identity: `Deathcharge/samsarix-workflows` (ready).
+Portfolio role: **independently useful reusable CI library**. The repository should provide reviewed automation contracts that work without a Samsarix service, while remaining explicit about GitHub, package-registry, and caller-repository dependencies.
+Repository identity: `Deathcharge/samsarix-workflows`.
 
-Current disposition: Merge the productization branch after exact-head verification and rollback-ref creation; release and adoption remain separate decisions.
+Current disposition: the public release candidate includes locked uv CI, pip-compatible Python CI, npm CI, bounded default runner budgets, a polyglot composition example, and hardened repository validation. Hosted verification, release, and real adoption remain separate gates.
 
 ## Stabilize the productized default
 
 - Keep the default branch buildable from a clean checkout and preserve exact-head CI evidence.
 - Keep Samsarix LLC branding, package identity, license metadata, and compatibility aliases internally consistent.
-- Preserve the pre-productization default under a rollback ref before merging; do not delete legacy history.
-- Review priority: resolve private visibility/BSL then merge PR 1 validate hosted jobs create immutable ref and adopt in one Python and Node consumer.
+- Preserve legacy history and use immutable release refs for rollback.
+- Review priority: pass hosted Python, uv, Node, and repository checks; create an immutable release from the green default branch; adopt it in a real consumer.
 
 ## Release candidate
 
@@ -24,18 +24,18 @@ Current disposition: Merge the productization branch after exact-head verificati
 
 Current hardening backlog:
 
-- `@master` examples are broken until draft PR #1 merges; there is no immutable release reference.
-- Private visibility conflicts with the stated public-library audience and can block callers.
-- No production consumer, adoption evidence, compatibility history, or release/version policy in practice.
-- BSL production terms use an ill-fitting “API calls or equivalent usage” threshold.
-- Arbitrary command inputs and runner/cache/version customization preserve a broad trusted configuration surface.
+- Examples use a verified immutable product-contract commit; no versioned release has yet established a compatibility history.
+- No production consumer, adoption evidence, or compatibility history has been recorded yet.
+- BSL terms now define a workflow-specific monthly call metric; commercial adopters should still perform their own legal review.
+- Trusted command inputs remain deliberately powerful and must never be populated from untrusted event data.
 
-## Samsarix adoption
+## Competitive delivery sequence
 
-- Define a public API, event, schema, artifact, or deployment contract before connecting to Samsarix Unified.
-- Add a consumer-owned contract fixture covering authentication, privacy, limits, errors, and version compatibility.
-- Make one implementation canonical; remove or freeze duplicate behavior only after parity and rollback are proven.
-- Record an owner, support level, compatibility window, and measurable adoption signal.
+1. **Locked modern Python — complete:** shipped the uv contract with exact tool installation, lockfile enforcement, caching, fixture coverage, and a hosted caller journey.
+2. **Predictable runner use — complete:** exposed bounded matrix parallelism alongside version count and job timeouts, with a documented default runner-minute ceiling.
+3. **Polyglot repositories — complete:** proved Node and Python contracts compose as separate, independently retryable jobs without an opaque auto-detection layer.
+4. **Versioned release:** create immutable release notes and a `v0.1.0` tag only from the protected, green default branch.
+5. **Evidence-led expansion:** evaluate pnpm, artifacts/test reports, and non-Ubuntu runners only after caller demand or a Samsarix-owned consumer demonstrates the need.
 
 ## Completion evidence
 

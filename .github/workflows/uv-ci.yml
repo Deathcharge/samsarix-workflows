@@ -1,13 +1,18 @@
-name: Reusable Node CI
+name: Reusable uv CI
 
 on:
   workflow_call:
     inputs:
-      node-versions:
-        description: JSON array of supported Node.js LTS versions.
+      python-versions:
+        description: JSON array of Python versions. Defaults to the oldest supported baseline and current stable release.
         required: false
         type: string
-        default: '["22", "24"]'
+        default: '["3.12", "3.14"]'
+      uv-version:
+        description: Exact uv version installed by the pinned setup action.
+        required: false
+        type: string
+        default: '0.12.0'
       runs-on:
         description: GitHub-hosted runner label.
         required: false
@@ -18,36 +23,36 @@ on:
         required: false
         type: string
         default: .
-      cache-dependency-path:
-        description: package-lock file or glob used for the npm cache key.
+      cache-dependency-glob:
+        description: Dependency file or glob relative to working-directory used for the uv cache key.
         required: false
         type: string
-        default: '**/package-lock.json'
-      install-command:
-        description: Trusted repository command used to install dependencies. Empty skips installation.
+        default: '**/uv.lock'
+      sync-command:
+        description: Trusted repository command used to sync the locked environment. Empty skips synchronization.
         required: false
         type: string
-        default: npm ci
+        default: uv sync --locked
       lint-command:
         description: Trusted repository lint command. Empty skips linting.
         required: false
         type: string
-        default: npm run lint --if-present
+        default: ''
       typecheck-command:
         description: Trusted repository type-check command. Empty skips type checking.
         required: false
         type: string
-        default: npm run typecheck --if-present
+        default: ''
       test-command:
         description: Trusted repository test command. Empty skips tests.
         required: false
         type: string
-        default: npm test
+        default: uv run --locked pytest
       build-command:
         description: Trusted repository build command. Empty skips the build.
         required: false
         type: string
-        default: npm run build --if-present
+        default: ''
       fail-fast:
         description: Cancel remaining matrix jobs after the first failure.
         required: false
@@ -69,14 +74,14 @@ permissions:
 
 jobs:
   ci:
-    name: Node.js ${{ matrix.node-version }}
+    name: uv / Python ${{ matrix.python-version }}
     runs-on: ${{ inputs.runs-on }}
     timeout-minutes: ${{ inputs.timeout-minutes }}
     strategy:
       fail-fast: ${{ inputs.fail-fast }}
       max-parallel: ${{ inputs.max-parallel }}
       matrix:
-        node-version: ${{ fromJSON(inputs.node-versions) }}
+        python-version: ${{ fromJSON(inputs.python-versions) }}
 
     steps:
       - name: Check out caller repository
@@ -84,18 +89,21 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - name: Set up uv and Python
+        id: setup-uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-          cache-dependency-path: ${{ inputs.cache-dependency-path }}
+          version: ${{ inputs.uv-version }}
+          python-version: ${{ matrix.python-version }}
+          working-directory: ${{ inputs.working-directory }}
+          enable-cache: true
+          cache-dependency-glob: ${{ inputs.cache-dependency-glob }}
 
-      - name: Install dependencies
-        if: ${{ inputs.install-command != '' }}
+      - name: Sync locked environment
+        if: ${{ inputs.sync-command != '' }}
         working-directory: ${{ inputs.working-directory }}
         env:
-          SAMSARIX_COMMAND: ${{ inputs.install-command }}
+          SAMSARIX_COMMAND: ${{ inputs.sync-command }}
         run: bash -euo pipefail -c "$SAMSARIX_COMMAND"
 
       - name: Lint
@@ -130,10 +138,12 @@ jobs:
         if: ${{ always() }}
         env:
           SAMSARIX_JOB_STATUS: ${{ job.status }}
-          SAMSARIX_RUNTIME_VERSION: ${{ matrix.node-version }}
+          SAMSARIX_PYTHON_VERSION: ${{ matrix.python-version }}
+          SAMSARIX_UV_VERSION: ${{ steps.setup-uv.outputs.uv-version }}
         run: |
           {
-            printf '### Node.js CI\n\n'
-            printf -- '- Version: \x60%s\x60\n' "$SAMSARIX_RUNTIME_VERSION"
+            printf '### uv CI\n\n'
+            printf -- '- Python: \x60%s\x60\n' "$SAMSARIX_PYTHON_VERSION"
+            printf -- '- uv: \x60%s\x60\n' "$SAMSARIX_UV_VERSION"
             printf -- '- Result: **%s**\n' "$SAMSARIX_JOB_STATUS"
           } >> "$GITHUB_STEP_SUMMARY"

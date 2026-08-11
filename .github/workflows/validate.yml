@@ -21,6 +21,21 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Verify workflows with actionlint
+        env:
+          ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+          ACTIONLINT_VERSION: 1.7.12
+        run: |
+          tool_dir="$(/usr/bin/mktemp --directory "${RUNNER_TEMP}/actionlint.XXXXXX")"
+          archive="${tool_dir}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          /usr/bin/curl --fail --location --silent --show-error \
+            --connect-timeout 10 --max-time 60 --retry 2 --retry-all-errors \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" \
+            --output "$archive"
+          /usr/bin/printf '%s  %s\n' "$ACTIONLINT_SHA256" "$archive" | /usr/bin/sha256sum --check --strict
+          /usr/bin/tar --extract --gzip --file "$archive" --directory "$tool_dir" actionlint
+          "$tool_dir/actionlint" -color .github/workflows/*.yml examples/*.yml
+
       - name: Set up Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
@@ -36,22 +51,6 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Install actionlint
-        env:
-          ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
-          ACTIONLINT_VERSION: 1.7.12
-        run: |
-          archive="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
-          curl --fail --location --silent --show-error \
-            --connect-timeout 10 --max-time 60 --retry 2 --retry-all-errors \
-            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${archive}" \
-            --output "$archive"
-          printf '%s  %s\n' "$ACTIONLINT_SHA256" "$archive" | sha256sum --check --strict
-          tar --extract --gzip --file "$archive" actionlint
-
-      - name: Run actionlint
-        run: ./actionlint -color .github/workflows/*.yml examples/*.yml
-
   python-smoke:
     name: Python consumer smoke test
     permissions:
@@ -61,6 +60,17 @@ jobs:
       python-versions: '["3.14"]'
       working-directory: test/fixtures/python
       cache-dependency-path: test/fixtures/python/pyproject.toml
+      timeout-minutes: 10
+
+  uv-smoke:
+    name: uv consumer smoke test
+    permissions:
+      contents: read
+    uses: ./.github/workflows/uv-ci.yml
+    with:
+      python-versions: '["3.14"]'
+      working-directory: test/fixtures/uv
+      cache-dependency-glob: uv.lock
       timeout-minutes: 10
 
   node-smoke:

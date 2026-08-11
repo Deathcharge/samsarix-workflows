@@ -1,0 +1,18 @@
+name: uv CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: Deathcharge/samsarix-workflows/.github/workflows/uv-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
+    with:
+      lint-command: uv run --locked ruff check .
+      typecheck-command: uv run --locked mypy .
+      build-command: uv build
