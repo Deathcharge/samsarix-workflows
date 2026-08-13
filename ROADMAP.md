@@ -7,16 +7,16 @@ This roadmap separates four gates: merge, release, publication, and flagship ado
 Portfolio role: **independently useful reusable CI library**. The repository should provide reviewed automation contracts that work without a Samsarix service, while remaining explicit about GitHub, package-registry, and caller-repository dependencies.
 Repository identity: `Deathcharge/samsarix-workflows`.
 
-Current disposition: the public release candidate includes locked uv CI, pip-compatible Python CI, npm CI, bounded default runner budgets, a polyglot composition example, and hardened repository validation. Hosted verification, release, and real adoption remain separate gates.
+Current disposition: `v0.1.0` includes locked uv CI, pip-compatible Python CI, npm CI, bounded default runner budgets, a polyglot composition example, and hardened repository validation. Real independent adoption is the next separate gate.
 
 ## Stabilize the productized default
 
 - Keep the default branch buildable from a clean checkout and preserve exact-head CI evidence.
 - Keep Samsarix LLC branding, package identity, license metadata, and compatibility aliases internally consistent.
 - Preserve legacy history and use immutable release refs for rollback.
-- Review priority: pass hosted Python, uv, Node, and repository checks; create an immutable release from the green default branch; adopt it in a real consumer.
+- Review priority: keep hosted Python, uv, Node, and repository checks green; adopt the immutable release in a real consumer.
 
-## Release candidate
+## Adoption candidate
 
 - Adopt it in one repository through an immutable revision.
 - Document permissions, rollback, failure isolation, and ownership.
@@ -24,8 +24,8 @@ Current disposition: the public release candidate includes locked uv CI, pip-com
 
 Current hardening backlog:
 
-- Examples use a verified immutable product-contract commit; no versioned release has yet established a compatibility history.
-- No production consumer, adoption evidence, or compatibility history has been recorded yet.
+- Examples use the protected, hosted-verified `v0.1.0` product-contract commit.
+- No independent production consumer, adoption evidence, or multi-release compatibility history has been recorded yet.
 - BSL terms now define a workflow-specific monthly call metric; commercial adopters should still perform their own legal review.
 - Trusted command inputs remain deliberately powerful and must never be populated from untrusted event data.
 
@@ -34,7 +34,7 @@ Current hardening backlog:
 1. **Locked modern Python — complete:** shipped the uv contract with exact tool installation, lockfile enforcement, caching, fixture coverage, and a hosted caller journey.
 2. **Predictable runner use — complete:** exposed bounded matrix parallelism alongside version count and job timeouts, with a documented default runner-minute ceiling.
 3. **Polyglot repositories — complete:** proved Node and Python contracts compose as separate, independently retryable jobs without an opaque auto-detection layer.
-4. **Versioned release:** create immutable release notes and a `v0.1.0` tag only from the protected, green default branch.
+4. **Versioned release — complete:** established immutable `v0.1.0` release notes from the protected, green default branch.
 5. **Evidence-led expansion:** evaluate pnpm, artifacts/test reports, and non-Ubuntu runners only after caller demand or a Samsarix-owned consumer demonstrates the need.
 
 ## Completion evidence

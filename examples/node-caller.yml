@@ -11,4 +11,4 @@ permissions:
 
 jobs:
   ci:
-    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
+    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@1d345715ab998124dfda301d0c4dca1484615cfd
