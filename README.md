@@ -6,7 +6,7 @@ Maintained by [Samsarix LLC](https://samsarix.com).
 
 Samsarix Workflows gives maintainers one reviewed CI contract they can call from many repositories. It checks out the caller repository, prepares a bounded runtime matrix, runs the caller's trusted install/quality/test/build commands, fails on the first broken step in each job, and writes a short job summary.
 
-**Maturity:** release candidate. The workflow files, local validators, negative security tests, and fixture commands pass locally. Every release candidate must also pass this repository's `Validate workflows` pipeline on GitHub-hosted runners before merge and release.
+**Maturity:** `v0.1.0`. The release passed local validation, adversarial security tests, real consumer fixtures, protected pull-request checks, and a post-merge GitHub-hosted run. Every future release candidate must pass the same gates.
 
 This repository is independently usable and requires no Samsarix service, account, API, database, or secret. Its canonical GitHub coordinate is `Deathcharge/samsarix-workflows`.
 
@@ -53,7 +53,7 @@ permissions:
 
 jobs:
   ci:
-    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
+    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@1d345715ab998124dfda301d0c4dca1484615cfd
     with:
       lint-command: python -m ruff check .
       typecheck-command: python -m mypy .
@@ -76,10 +76,10 @@ permissions:
 
 jobs:
   ci:
-    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
+    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@1d345715ab998124dfda301d0c4dca1484615cfd
 ```
 
-The examples pin commit `3a0309cd76820de898f4ff250cfbe01009c8598a`, the immutable revision containing the documented workflow contracts. Review release notes and update this SHA deliberately. A moving major tag may be more convenient, but a commit SHA is more resistant to reference retargeting.
+The examples pin commit `1d345715ab998124dfda301d0c4dca1484615cfd`, the protected, hosted-verified revision containing the `v0.1.0` workflow contracts. Review release notes and update this SHA deliberately. A moving major tag may be more convenient, but a commit SHA is more resistant to reference retargeting.
 
 The public repository can be called from other GitHub repositories without a Samsarix account. The caller still owns its GitHub Actions availability, policy, runner use, and billing.
 
@@ -109,7 +109,7 @@ Example for a project using a requirements file and the standard library test ru
 ```yaml
 jobs:
   ci:
-    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
+    uses: Deathcharge/samsarix-workflows/.github/workflows/python-ci.yml@1d345715ab998124dfda301d0c4dca1484615cfd
     with:
       python-versions: '["3.13", "3.14"]'
       cache-dependency-path: requirements-dev.txt
@@ -159,7 +159,7 @@ Monorepo example:
 ```yaml
 jobs:
   web:
-    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@3a0309cd76820de898f4ff250cfbe01009c8598a
+    uses: Deathcharge/samsarix-workflows/.github/workflows/node-ci.yml@1d345715ab998124dfda301d0c4dca1484615cfd
     with:
       working-directory: apps/web
       cache-dependency-path: apps/web/package-lock.json

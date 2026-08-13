@@ -25,7 +25,7 @@ The primary user is a maintainer who wants consistent pull-request CI across one
 5. Inspect separate matrix jobs and named install, quality, test, and build steps.
 6. Reproduce a failure locally, fix it, and re-run only failed GitHub jobs.
 
-The public examples pin commit `3a0309cd76820de898f4ff250cfbe01009c8598a`, which contains all documented product workflow contracts. Release notes provide the deliberate upgrade path.
+The public examples pin protected, hosted-verified commit `1d345715ab998124dfda301d0c4dca1484615cfd`, which contains the `v0.1.0` product workflow contracts. Release notes provide the deliberate upgrade path.
 
 ## Product and architecture choices
 
