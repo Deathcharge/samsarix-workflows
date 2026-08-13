@@ -6,7 +6,7 @@ import test from "node:test";
 import { parseDocument } from "yaml";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
-const PINNED_WORKFLOW_SHA = "3a0309cd76820de898f4ff250cfbe01009c8598a";
+const PINNED_WORKFLOW_SHA = "1d345715ab998124dfda301d0c4dca1484615cfd";
 
 function parseYaml(filename) {
   const document = parseDocument(fs.readFileSync(path.join(ROOT, filename), "utf8"), {
