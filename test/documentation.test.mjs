@@ -150,7 +150,7 @@ test("the uv contract pins setup-uv and carries a committed lock", () => {
   assert.equal(workflow.on.workflow_call.inputs["uv-version"].default, "0.12.0");
   assert.equal(
     workflow.jobs.ci.steps[1].uses,
-    "astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9",
+    "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d",
   );
   assert.equal(fs.existsSync(path.join(ROOT, "test", "fixtures", "uv", "uv.lock")), true);
 });
